@@ -1,0 +1,17 @@
+server:
+  port: 8086
+
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3312/deliveryserviceDb
+    username: root
+    password: root
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+  application:
+    name: DELIVERY-SERVICE
+  config:
+    import: configserver:http://localhost:9296

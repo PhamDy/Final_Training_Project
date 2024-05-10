@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="DeliveryService" />
+        <module name="ProductService" />
+        <module name="CartService" />
+        <module name="Service-registry" />
+        <module name="NotificationService" />
+        <module name="ConfigServer" />
+        <module name="OrderService" />
+        <module name="AccountService" />
+        <module name="PaymentService" />
+        <module name="CloudGateway" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="AccountService" target="17" />
+      <module name="CartService" target="17" />
+      <module name="CloudGateway" target="17" />
+      <module name="ConfigServer" target="17" />
+      <module name="DeliveryService" target="17" />
+      <module name="NotificationService" target="17" />
+      <module name="OrderService" target="17" />
+      <module name="PaymentService" target="17" />
+      <module name="ProductService" target="17" />
+      <module name="Service-registry" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="AccountService" options="-parameters" />
+      <module name="CartService" options="-parameters" />
+      <module name="CloudGateway" options="-parameters" />
+      <module name="ConfigServer" options="-parameters" />
+      <module name="DeliveryService" options="-parameters" />
+      <module name="NotificationService" options="-parameters" />
+      <module name="OrderService" options="-parameters" />
+      <module name="PaymentService" options="-parameters" />
+      <module name="ProductService" options="-parameters" />
+      <module name="Service-registry" options="-parameters" />
+    </option>
+  </component>
+</project>
