@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Orders {
-    private long orderId;
-    private String firstName;
-    private String lastName;
+    private long order_id;
+    private String first_name;
+    private String last_name    ;
     private String country;
     private String city;
     private String address;
@@ -21,9 +21,9 @@ public class Orders {
     private String phone;
     private String note;
     private String code;
-    private double totalPrice;
-    private long userId;
-    private long paymentId;
-    private long deliveryId;
+    private double total_price;
+    private long user_id;
+    private long payment_id;
+    private long delivery_id;
     private OrderStatus status;
 }

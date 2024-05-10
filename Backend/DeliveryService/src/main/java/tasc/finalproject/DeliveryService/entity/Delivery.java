@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Delivery extends BaseEntity{
-    private long deliveryId;
+    private long delivery_id;
     private String name;
     private double price;
     private String img;

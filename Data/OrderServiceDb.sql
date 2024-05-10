@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
     `payment_id` BIGINT NOT NULL,
     `delivery_id` BIGINT NOT NULL,
     `billing_address_id` BIGINT NOT NULL,
-    `order_status` ENUM('Success', 'Pending', 'Confirmed', 'Delivering', 'Cancel'),
+    `status` ENUM('Success', 'Pending', 'Confirmed', 'Delivering', 'Cancel'),
     `updated_at` TIMESTAMP NULL,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

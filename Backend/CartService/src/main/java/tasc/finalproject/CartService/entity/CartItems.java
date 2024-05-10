@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CartItems extends BaseEntity{
-    private long cartItemId;
-    private long productId;
-    private long cartId;
+    private long cart_item_id;
+    private long product_id;
+    private long cart_id;
     private double price;
-    private int quantity;
+    private long quantity;
 }

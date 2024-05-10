@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class OrdersDetails extends BaseEntity{
-    private long orderDetailsId;
-    private long orderId;
-    private long productId;
+    private long order_detail_id;
+    private long order_id;
+    private long product_id;
     private long quantity;
     private double price;
     private double discount;
