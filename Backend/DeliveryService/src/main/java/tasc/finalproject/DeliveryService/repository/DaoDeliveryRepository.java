@@ -8,4 +8,6 @@ public interface DaoDeliveryRepository {
 
     List<Delivery> getAll();
 
+    double getPrice(long deliveryId);
+
 }

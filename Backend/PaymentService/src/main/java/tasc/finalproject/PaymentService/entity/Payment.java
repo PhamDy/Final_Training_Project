@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Payment extends BaseEntity{
-    private long paymentId;
-    private String paymentMethod;
+    private long payment_id;
+    private long order_id;
+    private String payment_method;
     private PaymentStatus status;
+    private double amount;
 }

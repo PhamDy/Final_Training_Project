@@ -1,16 +1,16 @@
-package tasc.finalproject.OrderService.entity;
+package tasc.finalproject.OrderService.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tasc.finalproject.OrderService.entity.OrderStatus;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Orders extends BaseEntity{
-    private long order_id;
+public class OrderRequest {
     private String first_name;
     private String last_name;
     private String country;
@@ -21,8 +21,6 @@ public class Orders extends BaseEntity{
     private String phone;
     private String note;
     private String code;
-    private double total_price;
     private long user_id;
     private long delivery_id;
-    private OrderStatus status;
 }

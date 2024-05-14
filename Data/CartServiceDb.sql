@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `cart_item` (
    `cart_id` BIGINT NOT NULL,
    `price` DOUBLE NOT NULL,
    `quantity` INT NOT NULL,
+   `discount` FLOAT NULL,
    FOREIGN KEY (`cart_id`) REFERENCES carts(cart_id),
     `updated_at` TIMESTAMP NULL,
     `created_by` VARCHAR(50) NOT NULL,

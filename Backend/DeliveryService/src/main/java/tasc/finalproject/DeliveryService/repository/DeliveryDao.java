@@ -24,4 +24,14 @@ public class DeliveryDao implements DaoDeliveryRepository{
             return null;
         }
     }
+
+    @Override
+    public double getPrice(long deliveryId) {
+        try {
+            String sql = "SELECT price FROM delivery WHERE delivery_id = ?";
+            return jdbcTemplate.queryForObject(sql, new Object[]{deliveryId}, Double.class );
+        }catch (EmptyResultDataAccessException e){
+            return 0;
+        }
+    }
 }

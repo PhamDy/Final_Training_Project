@@ -55,18 +55,15 @@ public class CartServiceImpl implements CartService {
             LOGGER.info(String.format("Save cart id " + cartId + " successfully!"));
         }
 
-        CartItems cartItems = cartRepository.findByCartItByCartIdAndProductId(cartId, productId);
+        CartItems cartItems = cartRepository.findByCartItByCartItemAndProductId(cartId, productId);
         if (cartItems==null){
             cartItems = new CartItems();
             cartItems.setCart_id(cartId);
             cartItems.setProduct_id(productId);
             cartItems.setQuantity(quantity);
             cartItems.setCreated_by("Customer");
-            if (product.getDiscount() <= 0 || product.getDiscount() > 100) {
-                cartItems.setPrice(product.getPrice());
-            } else {
-                cartItems.setPrice(product.getPrice() - (product.getPrice() * product.getDiscount() / 100));
-            }
+            cartItems.setPrice(product.getPrice());
+            cartItems.setDiscount(product.getDiscount());
             LOGGER.info(String.format("Save cart items id successfully!"));
             cartRepository.saveCartItem(cartItems);
         } else {
@@ -93,7 +90,11 @@ public class CartServiceImpl implements CartService {
         double total = 0;
         for (CartItems c: cartItems
              ) {
-            total += c.getPrice()*c.getQuantity();
+            if (c.getDiscount()<=0){
+                total += c.getPrice()*c.getQuantity();
+            } else {
+                total += (c.getPrice() - (c.getPrice() * c.getDiscount() / 100))*c.getQuantity();
+            }
         }
         var cartItemResponseList = convertToListCartItem(cartItems);
         CartDto cartDto = new CartDto();

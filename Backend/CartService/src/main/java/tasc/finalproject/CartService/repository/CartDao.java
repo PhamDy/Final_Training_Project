@@ -47,7 +47,7 @@ public class CartDao implements DaoCartRepository{
     @Override
     public long saveCartItem(CartItems cartItems) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO cart_item(product_id, cart_id, price, quantity, created_by) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO cart_item(product_id, cart_id, price, quantity, discount, created_by) VALUES (?,?,?,?,?,?)";
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps = connection.prepareStatement(sql, new String[]{"cart_item_id"});
@@ -55,7 +55,8 @@ public class CartDao implements DaoCartRepository{
                     ps.setLong(2, cartItems.getCart_id());
                     ps.setDouble(3, cartItems.getPrice());
                     ps.setLong(4, cartItems.getQuantity());
-                    ps.setString(5, cartItems.getCreated_by());
+                    ps.setDouble(5, cartItems.getDiscount());
+                    ps.setString(6, cartItems.getCreated_by());
                     return ps;
                 },
                 keyHolder
@@ -89,10 +90,10 @@ public class CartDao implements DaoCartRepository{
     }
 
     @Override
-    public CartItems findByCartItByCartIdAndProductId(long cartId ,long productId) {
+    public CartItems findByCartItByCartItemAndProductId(long cartId , long productId) {
         try {
             String sql = "SELECT * FROM cart_item WHERE product_id = ? AND cart_id = ?";
-            return jdbcTemplate.queryForObject(sql,BeanPropertyRowMapper.newInstance(CartItems.class), cartId, productId);
+            return jdbcTemplate.queryForObject(sql,BeanPropertyRowMapper.newInstance(CartItems.class), productId, cartId);
         } catch (EmptyResultDataAccessException e){
             return null;
         }

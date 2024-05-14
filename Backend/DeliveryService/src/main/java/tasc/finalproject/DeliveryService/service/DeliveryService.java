@@ -8,4 +8,6 @@ public interface DeliveryService {
 
     List<Delivery> getAllDelivery();
 
+    double getPriceById(long deliveryId);
+
 }

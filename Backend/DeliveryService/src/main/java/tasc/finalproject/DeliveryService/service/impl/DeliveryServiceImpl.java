@@ -18,4 +18,10 @@ public class DeliveryServiceImpl implements DeliveryService {
     public List<Delivery> getAllDelivery() {
         return deliveryRepository.getAll();
     }
+
+    @Override
+    public double getPriceById(long deliveryId) {
+        return deliveryRepository.getPrice(deliveryId);
+    }
+
 }

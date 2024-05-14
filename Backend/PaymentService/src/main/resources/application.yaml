@@ -15,4 +15,17 @@ spring:
     name: PAYMENT-SERVICE
   config:
     import: configserver:http://localhost:9296
-
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: paymentId
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+    topic:
+      name: order

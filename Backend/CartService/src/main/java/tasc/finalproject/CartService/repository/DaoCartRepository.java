@@ -16,7 +16,7 @@ public interface DaoCartRepository {
 
     CartItems findByCartItemsId(long cartItemId);
 
-    CartItems findByCartItByCartIdAndProductId(long cartId ,long productId);
+    CartItems findByCartItByCartItemAndProductId(long cartId , long productId);
 
     List<CartItems> getCartItemByCartId(long cartId);
 

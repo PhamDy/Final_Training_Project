@@ -15,4 +15,5 @@ public class CartItems extends BaseEntity{
     private long cart_id;
     private double price;
     private long quantity;
+    private float discount;
 }
