@@ -22,3 +22,9 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     topic:
       name: order
+  feign:
+    httpclient:
+      enable-legacy-modifiers: true
+
+
+

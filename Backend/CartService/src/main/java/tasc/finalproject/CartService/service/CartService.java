@@ -11,4 +11,6 @@ public interface CartService {
     int updateQuantityCartIt(long cartItemId, long quantity);
 
     int deleteCartItemById(long cartItemId);
+
+    int updateCartStatus(long cartId);
 }

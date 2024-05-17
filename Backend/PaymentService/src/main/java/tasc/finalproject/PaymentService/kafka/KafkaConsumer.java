@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import tasc.finalproject.PaymentService.entity.Payment;
+import tasc.finalproject.PaymentService.entity.PaymentStatus;
 import tasc.finalproject.PaymentService.model.PaymentRequest;
 import tasc.finalproject.PaymentService.repository.DaoPaymentRepository;
 
@@ -19,7 +20,7 @@ public class KafkaConsumer {
     private DaoPaymentRepository paymentRepository;
 
     @KafkaListener(
-            topics = "${spring.kafka.topic.name}",
+            topics = "payment",
             groupId = "${spring.kafka.consumer.group-id}"
     )
     public void consume(PaymentRequest paymentRequest){

@@ -8,7 +8,7 @@ import tasc.finalproject.CartService.model.CartDto;
 import tasc.finalproject.CartService.service.CartService;
 
 @RestController
-@RequestMapping("/api/v1/private/cart")
+@RequestMapping("/private/api/v1/cart")
 public class CartController {
 
     @Autowired
@@ -37,6 +37,12 @@ public class CartController {
     public ResponseEntity<String> deleteCartItem(@PathVariable(name = "id") long cartItemId){
         cartService.deleteCartItemById(cartItemId);
         return new ResponseEntity<>("Delete cart item successfully " + cartItemId, HttpStatus.OK);
+    }
+
+    @PutMapping("/updateCartStatus")
+    public ResponseEntity<String> updateCartStatus(@RequestParam long cartId){
+        cartService.updateCartStatus(cartId);
+        return new ResponseEntity<>("Update status cart successfully: " + cartId, HttpStatus.OK);
     }
 
 }

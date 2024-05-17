@@ -1,5 +1,6 @@
-spring.application.name=CloudGatewayserver:
-  port: 9090
+server:
+  port: 9091
+
 
 spring:
   application:
@@ -12,14 +13,33 @@ spring:
         - id : ORDER-SERVICE
           uri: lb://ORDER-SERVICE
           predicates:
-            - Path=/account/**
+            - Path= /api/v1/**
+        - id: CART-SERVICE
+          uri: lb://CART-SERVICE
+          predicates:
+            - Path= /api/v1/**
         - id: PAYMENT-SERVICE
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/cart/**
-        - id: PRODUCT-SERVICE
+        - id: PRODUCT-SERVICE-PUBLIC
           uri: lb://PRODUCT-SERVICE
           predicates:
-            - Path=/product/**
+            - Path= /public/api/v1/product/**
+        - id: PRODUCT-SERVICE-PRIVATE
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path= /private/api/v1/product/**
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/oauthrealm
+          jwk-set-uri: "http://localhost:9090/realms/oauthrealm/protocol/openid-connect/certs"
 
 
+jwt:
+  auth:
+    converter:
+      resource-id: microservice_ecommerce
+      principle-attribute: preferred_username

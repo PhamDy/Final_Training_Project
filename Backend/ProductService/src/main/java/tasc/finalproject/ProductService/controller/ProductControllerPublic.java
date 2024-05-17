@@ -14,7 +14,7 @@ import tasc.finalproject.ProductService.service.ProductService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/public/product")
+@RequestMapping("/public/api/v1/product")
 public class ProductControllerPublic {
 
     @Autowired

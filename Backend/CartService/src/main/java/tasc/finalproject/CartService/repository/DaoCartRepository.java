@@ -26,4 +26,6 @@ public interface DaoCartRepository {
 
     int deleteCartItemById(long cartItemId);
 
+    int updateCartStatus(long cartId);
+
 }

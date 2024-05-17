@@ -11,7 +11,7 @@ import tasc.finalproject.OrderService.model.OrderRequest;
 import tasc.finalproject.OrderService.service.OrderService;
 
 @RestController
-@RequestMapping("/api/v1/private/order")
+@RequestMapping("/private/api/v1/order")
 public class OrdersController {
 
     @Autowired

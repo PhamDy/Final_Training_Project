@@ -9,8 +9,8 @@ import tasc.finalproject.PaymentService.entity.PaymentStatus;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentRequest {
-    private long orderId;
-    private String paymentMethod;
+    private long order_id;
+    private String payment_method;
     private PaymentStatus status;
     private double amount;
 }

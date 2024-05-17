@@ -11,7 +11,7 @@ import tasc.finalproject.PaymentService.entity.Payment;
 import tasc.finalproject.PaymentService.service.PaymentService;
 
 @RestController
-@RequestMapping("/api/v1/private/payment")
+@RequestMapping("/private/api/v1/payment")
 public class PaymentController {
 
     @Autowired

@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS `orders` (
     `total_price` DOUBLE NOT NULL,
    `user_id` BIGINT NOT NULL,
     `delivery_id` BIGINT NOT NULL,
-    `billing_address_id` BIGINT NOT NULL,
     `status` ENUM('Success', 'Pending', 'Confirmed', 'Delivering', 'Cancel'),
     `updated_at` TIMESTAMP NULL,
     `created_by` VARCHAR(50) NOT NULL,

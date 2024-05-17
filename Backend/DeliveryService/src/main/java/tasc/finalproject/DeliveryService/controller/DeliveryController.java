@@ -13,7 +13,7 @@ import tasc.finalproject.DeliveryService.service.DeliveryService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/public/delivery")
+@RequestMapping("/public/api/v1/delivery")
 public class DeliveryController {
 
     @Autowired

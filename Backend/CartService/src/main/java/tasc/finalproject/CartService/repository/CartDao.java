@@ -1,6 +1,7 @@
 package tasc.finalproject.CartService.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -130,4 +131,17 @@ public class CartDao implements DaoCartRepository{
         String sql = "DELETE FROM cart_item WHERE cart_item_id = ?";
         return jdbcTemplate.update(sql, cartItemId);
     }
+
+    @Override
+    public int updateCartStatus(long cartId) {
+        String sql = "UPDATE carts SET status = 'Close' WHERE cart_id = ?";
+        try {
+            return jdbcTemplate.update(sql, cartId);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+
 }

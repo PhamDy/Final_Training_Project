@@ -79,7 +79,12 @@ public class CartServiceImpl implements CartService {
 
         long cartId = cartRepository.findByUserIdInCartOpen(userId);
         if (cartId==0){
-            throw new CartNotFoundException("Cart " + cartId + " not found!");
+            return CartDto
+                    .builder()
+                    .userId(userId)
+                    .totalPrice(0.00)
+                    .cartItemResponseList(null)
+                    .build();
         }
 
         var cartItems = cartRepository.getCartItemByCartId(cartId);
@@ -147,4 +152,8 @@ public class CartServiceImpl implements CartService {
         return cartItemResponses;
     }
 
+    @Override
+    public int updateCartStatus(long cartId) {
+        return cartRepository.updateCartStatus(cartId);
+    }
 }
