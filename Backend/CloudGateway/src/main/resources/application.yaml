@@ -1,7 +1,6 @@
 server:
   port: 9091
 
-
 spring:
   application:
     name: API-GATEWAY
@@ -10,33 +9,60 @@ spring:
   cloud:
     gateway:
       routes:
-        - id : ORDER-SERVICE
-          uri: lb://ORDER-SERVICE
-          predicates:
-            - Path= /api/v1/**
-        - id: CART-SERVICE
-          uri: lb://CART-SERVICE
-          predicates:
-            - Path= /api/v1/**
-        - id: PAYMENT-SERVICE
-          uri: lb://PAYMENT-SERVICE
-          predicates:
-            - Path=/cart/**
         - id: PRODUCT-SERVICE-PUBLIC
           uri: lb://PRODUCT-SERVICE
           predicates:
-            - Path= /public/api/v1/product/**
+            - Path=/public/api/v1/product/**
         - id: PRODUCT-SERVICE-PRIVATE
           uri: lb://PRODUCT-SERVICE
           predicates:
-            - Path= /private/api/v1/product/**
+            - Path=/private/api/v1/product/**
+#        - id: CART-SERVICE-PUBLIC
+#          uri: lb://CART-SERVICE
+#          predicates:
+#            - Path=/public/api/v1/cart/**
+        - id: CART-SERVICE-PRIVATE
+          uri: lb://CART-SERVICE
+          predicates:
+            - Path=/private/api/v1/cart/**
+        - id: ORDER-SERVICE-PUBLIC
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/public/api/v1/order/**
+        - id: ORDER-SERVICE-PRIVATE
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/private/api/v1/order/**
+        - id: PAYMENT-SERVICE-PUBLIC
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/public/api/v1/payment/**
+        - id: PAYMENT-SERVICE-PRIVATE
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/private/api/v1/payment/**
+        - id: DELIVERY-SERVICE-PUBLIC
+          uri: lb://DELIVERY-SERVICE
+          predicates:
+            - Path=/public/api/v1/delivery/**
+        - id: DELIVERY-SERVICE-PRIVATE
+          uri: lb://DELIVERY-SERVICE
+          predicates:
+            - Path=/private/api/v1/delivery/**
+        - id: NOTIFICATION-SERVICE-PUBLIC
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/public/api/v1/notification/**
+        - id: NOTIFICATION-SERVICE-PRIVATE
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/private/api/v1/notification/**
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9090/realms/oauthrealm
-          jwk-set-uri: "http://localhost:9090/realms/oauthrealm/protocol/openid-connect/certs"
-
+          jwk-set-uri: http://localhost:9090/realms/oauthrealm/protocol/openid-connect/certs
 
 jwt:
   auth:

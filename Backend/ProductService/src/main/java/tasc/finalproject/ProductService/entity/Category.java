@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Category extends BaseEntity{
     private long category_id;
-    private long name;
+    private String name;
 }

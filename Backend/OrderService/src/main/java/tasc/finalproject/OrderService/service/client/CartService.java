@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "CART-SERVICE/api/v1/private/cart")
+@FeignClient(name = "CART-SERVICE/private/api/v1/cart")
 public interface CartService {
 
     @PutMapping("/updateCartStatus")

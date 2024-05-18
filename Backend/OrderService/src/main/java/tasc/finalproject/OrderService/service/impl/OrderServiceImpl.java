@@ -38,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
 
         LOGGER.info(String.format("Invoking Cart service to fetch "));
         CartDto cartDto = restTemplate.getForObject(
-                "http://CART-SERVICE/api/v1/private/cart/showCart",
+                "http://CART-SERVICE/private/api/v1/cart/showCart",
                 CartDto.class
         );
 

@@ -25,6 +25,16 @@ spring:
   feign:
     httpclient:
       enable-legacy-modifiers: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/oauthrealm
+          jwk-set-uri: "http://localhost:9090/realms/oauthrealm/protocol/openid-connect/certs"
 
-
+jwt:
+  auth:
+    converter:
+      resource-id: microservice_ecommerce
+      principle-attribute: preferred_username
 

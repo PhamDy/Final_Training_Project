@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import tasc.finalproject.CartService.entity.Cart;
@@ -20,7 +21,7 @@ import tasc.finalproject.ProductService.exception.ProductNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Repository
+@Service
 @AllArgsConstructor
 public class CartServiceImpl implements CartService {
 
@@ -38,9 +39,11 @@ public class CartServiceImpl implements CartService {
         LOGGER.info(String.format("Invoking Product service to fetch the product for id: {}", productId));
 
         Product product = restTemplate.getForObject(
-          "http://PRODUCT-SERVICE/api/v1/public/product/" + productId,
+                "http://PRODUCT-SERVICE/public/api/v1/product/" + productId,
                 Product.class
         );
+
+        LOGGER.info("xong");
         if (product==null){
             throw new ProductNotFoundException("Product by " + productId + " not found!");
         }
@@ -136,7 +139,7 @@ public class CartServiceImpl implements CartService {
         List<CartItemResponse> cartItemResponses = cartItemsList.stream()
                 .map(cartItems -> {
                     Product product = restTemplate.getForObject(
-                            "http://PRODUCT-SERVICE/api/v1/public/product/" + cartItems.getProduct_id(),
+                            "http://PRODUCT-SERVICE/public/api/v1/product/" + cartItems.getProduct_id(),
                             Product.class
                     );
                     CartItemResponse cartItemResponse = new CartItemResponse();

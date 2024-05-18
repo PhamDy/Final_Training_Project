@@ -1,4 +1,4 @@
-package tasc.finalproject.OrderService.config;
+package tasc.finalproject.OrderService.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
