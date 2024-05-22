@@ -145,7 +145,7 @@ public class CartServiceImpl implements CartService {
                     CartItemResponse cartItemResponse = new CartItemResponse();
                     cartItemResponse.setCartItemId(cartItems.getCart_item_id());
                     cartItemResponse.setProductId(cartItems.getProduct_id());
-                    cartItemResponse.setProductName(product.getProductName());
+                    cartItemResponse.setProductName(product.getProduct_name());
                     cartItemResponse.setImg(product.getAvatar());
                     cartItemResponse.setDiscount(product.getDiscount());
                     cartItemResponse.setPrice(product.getPrice());

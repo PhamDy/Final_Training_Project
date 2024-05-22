@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:3310/orderserviceDb
+    url: jdbc:mysql://${DB_HOST:localhost}:3307/orderserviceDb
     username: root
     password: root
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -30,7 +30,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:9090/realms/oauthrealm
-          jwk-set-uri: "http://localhost:9090/realms/oauthrealm/protocol/openid-connect/certs"
+          jwk-set-uri: http://localhost:9090/realms/oauthrealm/protocol/openid-connect/certs
 
 jwt:
   auth:

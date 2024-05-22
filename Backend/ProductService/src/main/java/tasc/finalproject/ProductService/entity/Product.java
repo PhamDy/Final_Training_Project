@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Product extends BaseEntity{
-    private long productId;
-    private long categoryId;
-    private String productName;
+    private long product_id;
+    private long category_id;
+    private String product_name;
     private String avatar;
     private String img1;
     private String img2;

@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:3311/paymentserviceDb
+    url: jdbc:mysql://${DB_HOST:localhost}:3307/paymentserviceDb
     username: root
     password: root
     driverClassName: com.mysql.cj.jdbc.Driver
