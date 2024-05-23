@@ -13,9 +13,10 @@ import { CategoryComponent } from './category/category.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CategorydetailsComponent } from './categorydetails/categorydetails.component';
 
 @NgModule({
-  declarations: [				
+  declarations: [					
     AppComponent,
       NavbarComponent,
       SidebarComponent,
@@ -24,7 +25,8 @@ import { ReactiveFormsModule } from '@angular/forms';
       ProductComponent,
       UserComponent,
       CategoryComponent,
-      ProductDetailsComponent
+      ProductDetailsComponent,
+      CategorydetailsComponent
    ],
   imports: [
     BrowserModule,

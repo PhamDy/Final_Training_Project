@@ -1,0 +1,53 @@
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Category details page</h1>
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- left column -->
+        <div class="col-md-6">
+          <!-- general form elements -->
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Edit</h3>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <form [formGroup]="form" (submit)="onSave()">
+              <div class="card-body">
+                <div class="form-group">
+                  <label for="id">Id</label>
+                  <input type="text" class="form-control" id="id" formControlName="id" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="name">Category name</label>
+                  <input type="text" class="form-control" id="name" formControlName="name" >
+                  <span class="textError"
+                      *ngIf="form.controls['name'].touched && form.controls['name'].hasError('required')">
+                      Name cannot be blank
+                    </span>
+                </div>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>

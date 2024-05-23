@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `users` (
    `email` VARCHAR(100) NOT NULL UNIQUE,
     `password` VARCHAR(100) NOT NULL,
     `otp` VARCHAR(5) NULL,
-    `otp_generated_time` DATETIME,
+    `otp_generated_time` DATETIME,accountserviceDb
      `enabled` TINYINT(1) DEFAULT 0,
     `updated_at` TIMESTAMP NULL,
     `created_by` VARCHAR(50) NOT NULL,

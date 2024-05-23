@@ -50,7 +50,7 @@ public class ProductControllerPublic {
         return new ResponseEntity<>("Successfully!", HttpStatus.OK);
     }
 
-    @PostMapping("/saveCategory")
+        @PostMapping("/saveCategory")
     public ResponseEntity<String> addCategory(@RequestParam String name){
         categoryService.saveCategory(name);
         return new ResponseEntity<>( "Ok", HttpStatus.CREATED);
