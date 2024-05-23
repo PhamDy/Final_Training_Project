@@ -26,7 +26,7 @@ public class ProductDao implements DaoProductRepository{
     @Override
     public List<ProductsResponse> getProductAll() {
         String sql = "SELECT p.product_id, p.product_name, p.category_id," +
-                " p.avatar, p.price, p.status, p.discount FROM products p";
+                " p.avatar, p.price, p.status, p.discount, p.quantity FROM products p";
         return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(ProductsResponse.class));
     }
 

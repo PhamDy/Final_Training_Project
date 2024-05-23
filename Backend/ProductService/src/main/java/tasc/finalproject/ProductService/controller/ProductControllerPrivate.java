@@ -11,6 +11,7 @@ import tasc.finalproject.ProductService.service.ProductService;
 
 @RestController
 @RequestMapping("/private/api/v1/product")
+@CrossOrigin(origins = "*",maxAge = 3600)
 public class ProductControllerPrivate {
 
     @Autowired

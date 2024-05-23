@@ -18,4 +18,5 @@ public class ProductsResponse {
     private double price;
     private ProductStatus status;
     private float discount;
+    private long quantity;
 }

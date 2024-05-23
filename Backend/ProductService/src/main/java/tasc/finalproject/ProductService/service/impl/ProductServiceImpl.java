@@ -27,8 +27,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductsResponse> getProductAll() {
-//        LOGGER.info(String.format("Get list product successfully ... !"));
-//        return productRepository.getProductAll();
+
         String redisKey = "List product";
         List<ProductsResponse> productList = redisService.getListProduct(redisKey);
 

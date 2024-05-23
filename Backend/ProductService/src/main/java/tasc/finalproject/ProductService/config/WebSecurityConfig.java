@@ -27,6 +27,7 @@ public class WebSecurityConfig {
                 .oauth2ResourceServer()
                     .jwt()
                         .jwtAuthenticationConverter(jwtAuthConverter);
+        http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         return http.build();
     }
 }

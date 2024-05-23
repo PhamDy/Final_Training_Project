@@ -32,8 +32,8 @@ VALUE ('table', 'Admin'),
 ('chair', 'Admin'),
 ('decorations', 'Admin');
 
-INSERT INTO `products` (`product_name`, category_id, `avartar_image_product`, `image1_product`,`image2_product`,`image3_product`,
-								`description`,`price`,`status`,`discount`, `quantity`,`created_by`)
+INSERT INTO `products` (`product_name`, category_id, `avatar`, `img1`,`img2`,`img3`,
+								`desc`,`price`,`status`,`discount`, `quantity`,`created_by`)
 								
 VALUE ('Benson Chair', 2, 'https://wpbingosite.com/wordpress/doweco/wp-content/uploads/2018/10/360-1.jpg', 'https://wpbingosite.com/wordpress/doweco/wp-content/uploads/2018/10/360-2.jpg','https://wpbingosite.com/wordpress/doweco/wp-content/uploads/2018/10/360-3.jpg', 
 'https://wpbingosite.com/wordpress/doweco/wp-content/uploads/2018/10/360-4.jpg', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
@@ -48,7 +48,7 @@ VALUE ('Benson Chair', 2, 'https://wpbingosite.com/wordpress/doweco/wp-content/u
 150.00, 'InStock', 0, 50, 'Admin');
 
 
-SELECT p.product_id, p.product_name, p.category_id, p.avartar_image_product, p.price, p.status, p.discount FROM products p;
+SELECT p.product_id, p.product_name, p.category_id, p.avatar, p.price, p.status, p.discount FROM products p;
 
 
 
