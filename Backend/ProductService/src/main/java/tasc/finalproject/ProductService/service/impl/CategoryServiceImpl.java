@@ -36,4 +36,9 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.getCategoryById(categoryId);
     }
 
+    @Override
+    public void editCategoryById(long id, String name) {
+        categoryRepository.editCategoryById(id, name);
+    }
+
 }

@@ -14,4 +14,7 @@ public interface DaoCategoryRepository {
 
     long saveProduct(Category category);
 
+    void editCategoryById(long id, String name);
+
+
 }

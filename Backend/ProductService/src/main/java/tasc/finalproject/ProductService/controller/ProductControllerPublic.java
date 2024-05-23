@@ -44,6 +44,12 @@ public class ProductControllerPublic {
         return new ResponseEntity<>(categoryService.getCategoryById(id), HttpStatus.OK);
     }
 
+    @PutMapping("/category/{id}")
+    public ResponseEntity<String> editCategoryById(@PathVariable long id, @RequestParam(name = "name") String name){
+        categoryService.editCategoryById(id, name);
+        return new ResponseEntity<>("Successfully!", HttpStatus.OK);
+    }
+
     @PostMapping("/saveCategory")
     public ResponseEntity<String> addCategory(@RequestParam String name){
         categoryService.saveCategory(name);

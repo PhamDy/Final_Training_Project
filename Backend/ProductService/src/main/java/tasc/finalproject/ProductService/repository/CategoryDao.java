@@ -57,4 +57,14 @@ public class CategoryDao implements DaoCategoryRepository{
         }
     }
 
+    @Override
+    public void editCategoryById(long id, String name) {
+        try {
+            String sql = "UPDATE category SET name = ? WHERE category_id = ?";
+            jdbcTemplate.update(sql, name, id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 }
