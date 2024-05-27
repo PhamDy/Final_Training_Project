@@ -5,11 +5,13 @@ import tasc.finalproject.ProductService.entity.Category;
 import java.util.List;
 
 public interface CategoryService {
-    long saveCategory(String name);
+    long saveCategory(Category category);
 
     List<Category> getAll();
 
     Category getCategoryById(long categoryId);
 
-    void editCategoryById(long id, String name);
+    void editCategoryById(long id, Category category);
+
+    int deleteCategoryById(long id);
 }

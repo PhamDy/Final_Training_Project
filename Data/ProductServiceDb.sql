@@ -51,5 +51,9 @@ VALUE ('Benson Chair', 2, 'https://wpbingosite.com/wordpress/doweco/wp-content/u
 SELECT p.product_id, p.product_name, p.category_id, p.avatar, p.price, p.status, p.discount FROM products p;
 
 
+SELECT p.product_id, p.product_name, p.category_id, 
+       p.avatar, p.price, p.status, p.discount, p.quantity 
+FROM products p 
+LIMIT 10 OFFSET 0;
 
 

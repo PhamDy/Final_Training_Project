@@ -1,8 +1,6 @@
 package tasc.finalproject.ProductService.repository;
 
 import tasc.finalproject.ProductService.entity.Category;
-import tasc.finalproject.ProductService.entity.Product;
-import tasc.finalproject.ProductService.model.ProductsResponse;
 
 import java.util.List;
 
@@ -12,9 +10,11 @@ public interface DaoCategoryRepository {
 
     Category getCategoryById(long categoryId);
 
-    long saveProduct(Category category);
+    long saveCategory(Category category);
 
-    void editCategoryById(long id, String name);
+    void editCategoryById(long id, Category category);
+
+    int deleteCategoryById(long id);
 
 
 }

@@ -1,9 +1,11 @@
 package tasc.finalproject.ProductService.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tasc.finalproject.ProductService.entity.Category;
 import tasc.finalproject.ProductService.entity.Product;
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/public/api/v1/product")
 @CrossOrigin(origins = "*",maxAge = 3600)
+//@CrossOrigin(origins = "http://localhost:4200")
 public class ProductControllerPublic {
 
     @Autowired
@@ -25,8 +28,8 @@ public class ProductControllerPublic {
     private CategoryService categoryService;
 
     @GetMapping("/")
-    public ResponseEntity<List<ProductsResponse>> getProductAll(){
-        return new ResponseEntity<>(productService.getProductAll(), HttpStatus.OK);
+    public ResponseEntity<Page<ProductsResponse>> getProductAll(@PageableDefault(size = 10)Pageable pageable) {
+        return new ResponseEntity<>(productService.getProductAll(pageable), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -44,16 +47,6 @@ public class ProductControllerPublic {
         return new ResponseEntity<>(categoryService.getCategoryById(id), HttpStatus.OK);
     }
 
-    @PutMapping("/category/{id}")
-    public ResponseEntity<String> editCategoryById(@PathVariable long id, @RequestParam(name = "name") String name){
-        categoryService.editCategoryById(id, name);
-        return new ResponseEntity<>("Successfully!", HttpStatus.OK);
-    }
 
-        @PostMapping("/saveCategory")
-    public ResponseEntity<String> addCategory(@RequestParam String name){
-        categoryService.saveCategory(name);
-        return new ResponseEntity<>( "Ok", HttpStatus.CREATED);
-    }
 
 }

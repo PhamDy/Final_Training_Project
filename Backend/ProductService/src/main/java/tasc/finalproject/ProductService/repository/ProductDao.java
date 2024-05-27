@@ -2,6 +2,9 @@ package tasc.finalproject.ProductService.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -41,24 +44,73 @@ public class ProductDao implements DaoProductRepository{
     }
 
     @Override
-    public long saveProduct(Category category) {
+    public long saveProduct(Product product) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO category(name, created_by) VALUES (?,?)";
+        String sql = "INSERT INTO products (category_id, product_name, avatar," +
+                " img1, img2, img3, description, price," +
+                " status, discount, quantity, created_by)" +
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
         jdbcTemplate.update(
                 connection -> {
-                    PreparedStatement ps = connection.prepareStatement(sql, new String[]{"category_id"});
-                    ps.setString(1, category.getName());
-                    ps.setString(2, category.getCreated_by());
+                    PreparedStatement ps = connection.prepareStatement(sql, new String[]{"product_id"});
+                    ps.setLong(1, product.getCategory_id());
+                    ps.setString(2, product.getProduct_name());
+                    ps.setString(3, product.getAvatar());
+                    ps.setString(4, product.getImg1());
+                    ps.setString(5, product.getImg2());
+                    ps.setString(6, product.getImg3());
+                    ps.setString(7, product.getDescription());
+                    ps.setDouble(8, product.getPrice());
+                    ps.setString(9, product.getStatus().name());
+                    ps.setFloat(10, product.getDiscount());
+                    ps.setLong(11, product.getQuantity());
+                    ps.setString(12, product.getCreated_by());
                     return ps;
                 },
                 keyHolder
         );
-
         if (keyHolder.getKey() != null) {
             return keyHolder.getKey().longValue();
         } else {
-            throw new RuntimeException("Some problems with getting the category id.");
+            throw new RuntimeException("Some problems with getting the product id.");
         }
+    }
+
+    @Override
+    public void editProduct(long productId, Product product) {
+        try {
+            String sql = "UPDATE products SET product_name = ?, avatar = ?, img1 = ?, img2 = ?, img3 = ?, description = ?, " +
+                    "price = ?, status = ?, discount = ?, quantity = ?, category_id = ?, updated_by = ? " +
+                    "WHERE product_id = ?";
+            jdbcTemplate.update(sql, product.getProduct_name(), product.getAvatar(), product.getImg1(), product.getImg2(), product.getImg3(),
+                   product.getDescription(), product.getPrice(), product.getStatus().name(), product.getDiscount(), product.getQuantity(),
+                    product.getCategory_id(), product.getUpdated_by() ,productId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public Page<ProductsResponse> listProduct(Pageable pageable) {
+        String rowCountSql = "SELECT count(1) AS row_count " +
+                "FROM products ";
+        int total = jdbcTemplate.queryForObject(
+                rowCountSql, Integer.class
+        );
+
+        String sql = "SELECT p.product_id, p.product_name, p.category_id, " +
+                "p.avatar, p.price, p.status, p.discount, p.quantity " +
+                "FROM products p " +
+                "LIMIT ? OFFSET ?";
+
+        List<ProductsResponse> list = jdbcTemplate.query(
+                sql,
+                new Object[]{pageable.getPageSize(), pageable.getOffset()},
+                BeanPropertyRowMapper.newInstance(ProductsResponse.class)
+        );
+
+        return new PageImpl<>(list, pageable, total);
     }
 
 

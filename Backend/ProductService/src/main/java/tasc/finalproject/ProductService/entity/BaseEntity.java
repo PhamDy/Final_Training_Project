@@ -1,5 +1,6 @@
 package tasc.finalproject.ProductService.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;

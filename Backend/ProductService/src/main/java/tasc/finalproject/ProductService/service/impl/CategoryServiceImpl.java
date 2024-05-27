@@ -19,11 +19,8 @@ public class CategoryServiceImpl implements CategoryService {
     private DaoCategoryRepository categoryRepository;
 
     @Override
-    public long saveCategory(String name) {
-        Category category = new Category();
-        category.setName(name);
-        category.setCreated_by("customer");
-        return productRepository.saveProduct(category);
+    public long saveCategory(Category category) {
+        return categoryRepository.saveCategory(category);
     }
 
     @Override
@@ -37,8 +34,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void editCategoryById(long id, String name) {
-        categoryRepository.editCategoryById(id, name);
+    public void editCategoryById(long id, Category category) {
+        categoryRepository.editCategoryById(id, category);
     }
+
+    @Override
+    public int deleteCategoryById(long id) {
+        return categoryRepository.deleteCategoryById(id);
+    }
+
 
 }

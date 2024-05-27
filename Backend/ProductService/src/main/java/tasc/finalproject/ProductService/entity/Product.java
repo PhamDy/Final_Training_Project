@@ -17,7 +17,7 @@ public class Product extends BaseEntity{
     private String img1;
     private String img2;
     private String img3;
-    private String desc;
+    private String description;
     private double price;
     private ProductStatus status;
     private float discount;

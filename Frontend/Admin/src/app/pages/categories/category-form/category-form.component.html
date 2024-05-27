@@ -1,0 +1,78 @@
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Category management</h1>
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- left column -->
+        <div class="col-md-6">
+          <!-- general form elements -->
+          <div class="card card-primary">
+            <div class="card-header"> 
+              <h3 class="card-title">Infor</h3>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Category name</label>
+                  <input class="form-control" type="text" formControlName="name">
+                  <small class="text-danger" *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
+                    Category Name is required.
+                </small>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Updated at</label>
+                  <input type="date" class="form-control" formControlName="updated_at" readonly>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Created by</label>
+                  <input type="text" class="form-control" formControlName="created_by">
+                  <small class="text-danger" *ngIf="categoryForm.get('created_by')?.invalid && categoryForm.get('created_by')?.touched">
+                    Category Name is required.
+                </small>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Created at</label>
+                  <input type="date " class="form-control" formControlName="created_at" readonly>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Updated by</label>
+                  <input type="text" class="form-control" formControlName="updated_by">
+                  <small class="text-danger" *ngIf="categoryForm.get('updated_by')?.invalid && categoryForm.get('updated_by')?.touched">
+                    Updated By is required.
+                  </small>
+                </div>
+
+                  </div>
+              <!-- /.card-body -->
+              <div class="card-footer">
+                <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid">Submit</button>
+              </div>
+            </form>
+          </div>
+
+
+        </div>
+      </div>
+      <!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>

@@ -1,5 +1,7 @@
 package tasc.finalproject.ProductService.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import tasc.finalproject.ProductService.entity.Category;
 import tasc.finalproject.ProductService.entity.Product;
 import tasc.finalproject.ProductService.model.ProductsResponse;
@@ -12,6 +14,10 @@ public interface DaoProductRepository {
 
     Product getProductById(long productId);
 
-    long saveProduct(Category category);
+    long saveProduct(Product product);
+
+    void editProduct(long productId ,Product product);
+
+    Page<ProductsResponse> listProduct(Pageable pageable);
 
 }

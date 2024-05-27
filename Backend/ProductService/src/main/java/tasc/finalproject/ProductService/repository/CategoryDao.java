@@ -8,8 +8,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import tasc.finalproject.ProductService.entity.Category;
-import tasc.finalproject.ProductService.entity.Product;
-import tasc.finalproject.ProductService.model.ProductsResponse;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -37,14 +35,15 @@ public class CategoryDao implements DaoCategoryRepository{
     }
 
     @Override
-    public long saveProduct(Category category) {
+    public long saveCategory(Category category) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String sql = "INSERT INTO category(name, created_by) VALUES (?,?)";
+        String sql = "INSERT INTO category(name, created_by, updated_by) VALUES (?,?,?)";
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps = connection.prepareStatement(sql, new String[]{"category_id"});
                     ps.setString(1, category.getName());
                     ps.setString(2, category.getCreated_by());
+                    ps.setString(3, category.getUpdated_by());
                     return ps;
                 },
                 keyHolder
@@ -58,13 +57,19 @@ public class CategoryDao implements DaoCategoryRepository{
     }
 
     @Override
-    public void editCategoryById(long id, String name) {
+    public void editCategoryById(long id, Category category) {
         try {
-            String sql = "UPDATE category SET name = ? WHERE category_id = ?";
-            jdbcTemplate.update(sql, name, id);
+            String sql = "UPDATE category SET name = ?, created_by = ? ,updated_by = ? WHERE category_id = ?";
+            jdbcTemplate.update(sql, category.getName(), category.getCreated_by() ,category.getUpdated_by() , id);
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public int deleteCategoryById(long id) {
+        String sql = "DELETE FROM category WHERE category_id = ?";
+        return jdbcTemplate.update(sql, id);
     }
 
 }

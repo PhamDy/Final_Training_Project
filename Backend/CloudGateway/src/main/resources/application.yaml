@@ -13,14 +13,30 @@ spring:
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/public/api/v1/product/**
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              allowedHeaders: '*'
+              maxAge: 30
         - id: PRODUCT-SERVICE-PRIVATE
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/private/api/v1/product/**
-#        - id: CART-SERVICE-PUBLIC
-#          uri: lb://CART-SERVICE
-#          predicates:
-#            - Path=/public/api/v1/cart/**
+          metadata:
+            cors:
+              allowedOrigins: '*'
+              allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              allowedHeaders: '*'
+              maxAge: 30
         - id: CART-SERVICE-PRIVATE
           uri: lb://CART-SERVICE
           predicates:
@@ -37,10 +53,6 @@ spring:
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/public/api/v1/payment/**
-        - id: PAYMENT-SERVICE-PRIVATE
-          uri: lb://PAYMENT-SERVICE
-          predicates:
-            - Path=/private/api/v1/payment/**
         - id: DELIVERY-SERVICE-PUBLIC
           uri: lb://DELIVERY-SERVICE
           predicates:
@@ -49,14 +61,10 @@ spring:
           uri: lb://DELIVERY-SERVICE
           predicates:
             - Path=/private/api/v1/delivery/**
-        - id: NOTIFICATION-SERVICE-PUBLIC
+        - id: NOTIFICATION-SERVICE
           uri: lb://NOTIFICATION-SERVICE
           predicates:
             - Path=/public/api/v1/notification/**
-        - id: NOTIFICATION-SERVICE-PRIVATE
-          uri: lb://NOTIFICATION-SERVICE
-          predicates:
-            - Path=/private/api/v1/notification/**
   security:
     oauth2:
       resourceserver:
