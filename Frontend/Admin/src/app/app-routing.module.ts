@@ -21,6 +21,10 @@ const routes: Routes = [
     component: ProductFormComponent
   },
   {
+    path: "newProduct",
+    component: ProductFormComponent
+  },
+  {
     path: "category",
     component: CategoryListComponent
   },

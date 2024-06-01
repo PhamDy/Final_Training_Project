@@ -14,13 +14,10 @@ import tasc.finalproject.ProductService.entity.ProductStatus;
 public class CreateProduct {
     private long category_id;
     private String product_name;
-    private MultipartFile avatar;
-    private MultipartFile img1;
-    private MultipartFile img2;
-    private MultipartFile img3;
     private String description;
     private double price;
     private float discount;
     private long quantity;
     private String created_by;
+    private String updated_by;
 }

@@ -1,23 +1,20 @@
 package tasc.finalproject.ProductService.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import tasc.finalproject.ProductService.entity.Category;
 import tasc.finalproject.ProductService.entity.Product;
-import tasc.finalproject.ProductService.exception.ProductNotFoundException;
+import tasc.finalproject.ProductService.model.Page;
 import tasc.finalproject.ProductService.model.ProductsResponse;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -48,8 +45,8 @@ public class ProductDao implements DaoProductRepository{
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO products (category_id, product_name, avatar," +
                 " img1, img2, img3, description, price," +
-                " status, discount, quantity, created_by)" +
-                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+                " status, discount, quantity, created_by, updated_by)" +
+                " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps = connection.prepareStatement(sql, new String[]{"product_id"});
@@ -65,6 +62,7 @@ public class ProductDao implements DaoProductRepository{
                     ps.setFloat(10, product.getDiscount());
                     ps.setLong(11, product.getQuantity());
                     ps.setString(12, product.getCreated_by());
+                    ps.setString(13, product.getUpdated_by());
                     return ps;
                 },
                 keyHolder
@@ -80,11 +78,11 @@ public class ProductDao implements DaoProductRepository{
     public void editProduct(long productId, Product product) {
         try {
             String sql = "UPDATE products SET product_name = ?, avatar = ?, img1 = ?, img2 = ?, img3 = ?, description = ?, " +
-                    "price = ?, status = ?, discount = ?, quantity = ?, category_id = ?, updated_by = ? " +
+                    "price = ?, status = ?, discount = ?, quantity = ?, category_id = ?, created_by = ?, updated_by = ? " +
                     "WHERE product_id = ?";
             jdbcTemplate.update(sql, product.getProduct_name(), product.getAvatar(), product.getImg1(), product.getImg2(), product.getImg3(),
                    product.getDescription(), product.getPrice(), product.getStatus().name(), product.getDiscount(), product.getQuantity(),
-                    product.getCategory_id(), product.getUpdated_by() ,productId);
+                    product.getCategory_id(), product.getCreated_by() ,product.getUpdated_by() ,productId);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -92,25 +90,53 @@ public class ProductDao implements DaoProductRepository{
 
 
     @Override
-    public Page<ProductsResponse> listProduct(Pageable pageable) {
-        String rowCountSql = "SELECT count(1) AS row_count " +
-                "FROM products ";
-        int total = jdbcTemplate.queryForObject(
-                rowCountSql, Integer.class
-        );
+    public Page<ProductsResponse> listProduct(String name, int size, int offset) {
+        String whereClause = "";
+        Object[] params;
+
+        if (name != null && !name.isEmpty()) {
+            whereClause = " WHERE product_name LIKE ?";
+            params = new Object[]{"%" + name + "%", size, offset};
+        } else {
+            params = new Object[]{size, offset};
+        }
+
+        String rowCountSql = "SELECT count(1) AS row_count FROM products" + whereClause;
+
+        int totalElements;
+        try {
+//            total = jdbcTemplate.queryForObject(rowCountSql, new Object[]{"%" + name + "%"}, Integer.class);
+
+            totalElements = jdbcTemplate.queryForObject(rowCountSql, name != null && !name.isEmpty() ? new Object[]{"%" + name + "%"} : new Object[]{}, Integer.class);
+
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Failed to count users", e);
+        }
 
         String sql = "SELECT p.product_id, p.product_name, p.category_id, " +
                 "p.avatar, p.price, p.status, p.discount, p.quantity " +
-                "FROM products p " +
-                "LIMIT ? OFFSET ?";
+                "FROM products p " + whereClause +
+                " LIMIT ? OFFSET ?";
 
-        List<ProductsResponse> list = jdbcTemplate.query(
-                sql,
-                new Object[]{pageable.getPageSize(), pageable.getOffset()},
-                BeanPropertyRowMapper.newInstance(ProductsResponse.class)
-        );
+        List<ProductsResponse> list;
+        try {
+            list = jdbcTemplate.query(
+                    sql,
+                    params,
+                    BeanPropertyRowMapper.newInstance(ProductsResponse.class)
+            );
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Failed to query users", e);
+        }
 
-        return new PageImpl<>(list, pageable, total);
+        int totalPage;
+        if (totalElements%size==0){
+            totalPage = (totalElements/size);
+        } else {
+            totalPage = (totalElements/size) + 1;
+        }
+
+        return new tasc.finalproject.ProductService.model.Page<ProductsResponse>(list, size, offset, totalPage, totalElements);
     }
 
 

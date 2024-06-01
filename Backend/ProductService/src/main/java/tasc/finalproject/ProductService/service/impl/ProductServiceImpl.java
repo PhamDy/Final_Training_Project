@@ -3,14 +3,13 @@ package tasc.finalproject.ProductService.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tasc.finalproject.ProductService.entity.Product;
 import tasc.finalproject.ProductService.entity.ProductStatus;
 import tasc.finalproject.ProductService.exception.ProductNotFoundException;
 import tasc.finalproject.ProductService.model.CreateProduct;
+import tasc.finalproject.ProductService.model.Page;
 import tasc.finalproject.ProductService.model.ProductsResponse;
 import tasc.finalproject.ProductService.repository.DaoProductRepository;
 import tasc.finalproject.ProductService.service.ImageUploadService;
@@ -32,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private RedisService redisService;
 
     @Override
-    public Page<ProductsResponse> getProductAll(Pageable pageable) {
+    public Page<ProductsResponse> getProductAll(String name, int size, int offset) {
 
 //        String redisKey = "List product";
 //        List<ProductsResponse> productList = redisService.getListProduct(redisKey);
@@ -48,41 +47,46 @@ public class ProductServiceImpl implements ProductService {
 //        redisService.setListProduct(redisKey, productList);
 //
 //        return productList;
-        var list = productRepository.listProduct(pageable);
-        return new PageImpl<>(list.getContent(), list.getPageable(), list.getTotalPages());
+        productRepository.listProduct(name, size, offset );
+        return productRepository.listProduct(name, size, offset );
 
     }
 
     @Override
     public Product getProductById(long productId) {
-        String redisKey = "Product details";
-        Product product = (Product) redisService.hashGet(redisKey, String.valueOf(productId));
-        if (product != null){
-            return product;
-        }
 
-        product = productRepository.getProductById(productId);
+        var product = productRepository.getProductById(productId);
         LOGGER.info(String.format("Get product by id: " + productId));
-        redisService.hashSet(redisKey, String.valueOf(productId), product);
         return product;
     }
 
     @Override
-    public long save(CreateProduct createProduct) {
+    public long save(CreateProduct createProduct, MultipartFile avatar, MultipartFile img1, MultipartFile img2, MultipartFile img3) {
         Product product = mapToEntity(createProduct);
+        product.setAvatar(imageUploadService.uploadImage(avatar));
+        product.setImg1(img1 != null ? imageUploadService.uploadImage(img1) : "");
+        product.setImg2(img2 != null ? imageUploadService.uploadImage(img2) : "");
+        product.setImg3(img3 != null ? imageUploadService.uploadImage(img3) : "");
         product.setCreated_by(createProduct.getCreated_by());
+        product.setUpdated_by(createProduct.getUpdated_by());
         LOGGER.info(String.format("Save product successfully!"));
+        LOGGER.info(String.format(product.toString()));
         return productRepository.saveProduct(product);
     }
 
     @Override
-    public void edit(long id, CreateProduct createProduct) {
+    public void edit(long id, CreateProduct createProduct, MultipartFile avatar,MultipartFile img1,MultipartFile img2,MultipartFile img3) {
         var check = productRepository.getProductById(id);
         if (check==null){
             throw new ProductNotFoundException("Not found product by id: " + id);
         }
         Product product = mapToEntity(createProduct);
-        product.setUpdated_by(createProduct.getCreated_by());
+        product.setAvatar(imageUploadService.uploadImage(avatar));
+        product.setImg1(img1 != null ? imageUploadService.uploadImage(img1) : "");
+        product.setImg2(img2 != null ? imageUploadService.uploadImage(img2) : "");
+        product.setImg3(img3 != null ? imageUploadService.uploadImage(img3) : "");
+        product.setUpdated_by(createProduct.getUpdated_by());
+        product.setCreated_by(createProduct.getCreated_by());
         productRepository.editProduct(id, product);
         LOGGER.info(String.format("Edit product successfully!"));
     }
@@ -92,10 +96,6 @@ public class ProductServiceImpl implements ProductService {
                 .builder()
                 .product_name(createProduct.getProduct_name())
                 .category_id(createProduct.getCategory_id())
-                .avatar(imageUploadService.uploadImage(createProduct.getAvatar()))
-                .img1(createProduct.getImg1() != null ? imageUploadService.uploadImage(createProduct.getImg1()) : "")
-                .img2(createProduct.getImg2() != null ? imageUploadService.uploadImage(createProduct.getImg2()) : "")
-                .img3(createProduct.getImg3() != null ? imageUploadService.uploadImage(createProduct.getImg3()) : "")
                 .description(createProduct.getDescription())
                 .price(createProduct.getPrice())
                 .status(createProduct.getQuantity() != 0 ? ProductStatus.InStock : ProductStatus.OutOfStock)

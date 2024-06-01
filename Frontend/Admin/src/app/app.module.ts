@@ -12,6 +12,8 @@ import { FooterComponent } from './layout/footer/footer.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { CategoryModule } from './pages/categories/category.module';
 import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common'; 
+import { ProductModule } from './pages/products/product.module';
 
 
 
@@ -28,7 +30,9 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserModule,
     AppRoutingModule,
     CategoryModule,
-    HttpClientModule
+    ProductModule,
+    HttpClientModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

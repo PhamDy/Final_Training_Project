@@ -60,7 +60,7 @@ public class CategoryDao implements DaoCategoryRepository{
     public void editCategoryById(long id, Category category) {
         try {
             String sql = "UPDATE category SET name = ?, created_by = ? ,updated_by = ? WHERE category_id = ?";
-            jdbcTemplate.update(sql, category.getName(), category.getCreated_by() ,category.getUpdated_by() , id);
+            jdbcTemplate.update(sql, category.getName(), category.getCreated_by() ,category.getUpdated_by(), id);
         }catch (Exception e){
             e.printStackTrace();
         }
