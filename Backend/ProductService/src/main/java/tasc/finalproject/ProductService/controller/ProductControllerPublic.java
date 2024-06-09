@@ -1,5 +1,7 @@
 package tasc.finalproject.ProductService.controller;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -12,20 +14,20 @@ import tasc.finalproject.ProductService.model.Page;
 import tasc.finalproject.ProductService.model.ProductsResponse;
 import tasc.finalproject.ProductService.service.CategoryService;
 import tasc.finalproject.ProductService.service.ProductService;
+import tasc.finalproject.ProductService.service.RedisService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/public/api/v1/product")
+@RequiredArgsConstructor
 @CrossOrigin(origins = "*",maxAge = 3600)
-//@CrossOrigin(origins = "http://localhost:4200")
 public class ProductControllerPublic {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+    private final CategoryService categoryService;
+    private final RedisService redisService;
 
-    @Autowired
-    private CategoryService categoryService;
 
     @GetMapping("/")
     public ResponseEntity<Page<ProductsResponse>> getProductAll(@RequestParam(required = false) String name,
@@ -47,6 +49,24 @@ public class ProductControllerPublic {
     @GetMapping("/category/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable long id){
         return new ResponseEntity<>(categoryService.getCategoryById(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteKeyCache/{key}")
+    public String deleteKeyCache(@PathVariable String key){
+        redisService.deleteKey(key);
+        return "OK";
+    }
+
+    @DeleteMapping("/prefix")
+    public String deleteProductsByPrefix() {
+        redisService.deleteByPrefix("offline:product:");
+        return "Ok";
+    }
+
+    @DeleteMapping("/deleteAllCache")
+    public String deleteAllCache(){
+        redisService.deleteAll();
+        return "OK";
     }
 
 

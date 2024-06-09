@@ -17,7 +17,7 @@ public class CacheProductAll implements Runnable{
     @SneakyThrows
     @Override
     public void run() {
-        while (true){
+        Thread.sleep(2000);
             System.out.println("start thread ... " + Thread.currentThread().getId());
             if (ProductServiceImpl.productBlockingQueue!=null){
                 while (!ProductServiceImpl.productBlockingQueue.isEmpty()){
@@ -26,8 +26,6 @@ public class CacheProductAll implements Runnable{
                 }
             }
             System.out.println(Thread.currentThread().getId() + " fineshed!");
-            Thread.sleep(2000);
-        }
     }
 
 }

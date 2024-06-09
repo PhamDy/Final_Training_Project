@@ -1,10 +1,7 @@
 package tasc.finalproject.ProductService.service.impl;
 
-import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,10 +27,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 @EnableScheduling
 public class ProductServiceImpl implements ProductService {
 
-    public static final int NUM_THREAD = 5;
+    public static final int NUM_THREAD = 3;
     final int size = 10;
-    int offset = 0;
-    public static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class)   ;
+    public static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
     private DaoProductRepository productRepository;
     private ImageUploadService imageUploadService;
     private RedisService redisService;
@@ -46,19 +42,19 @@ public class ProductServiceImpl implements ProductService {
 
     public static BlockingQueue<Product> productBlockingQueue = new LinkedBlockingQueue<>();
 
-    @Scheduled(cron = "0 0/5 * * * ?")
-//    @Scheduled(fixedDelay = 2000)
-    @PostConstruct
+//    @Scheduled(cron = "0 0 16 * * ?")
+    @Scheduled(fixedRate = 5000)
     public void initCacheAll(){
         System.out.println("Start");
         autoSaveProductAll();
+        int offset = 0;
         while (true){
             var list = productRepository.listProduct(size, offset);
-            productBlockingQueue.addAll(list);
-            offset+=10;
-            if (list==null){
+            if (list==null || list.isEmpty()){
                 break;
             }
+            productBlockingQueue.addAll(list);
+            offset+=size;
         }
     }
 
@@ -80,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
     public Product getProductById(long productId) {
         String redisKey = "offline:product:" + productId;
         Product product;
-        product = (Product) redisService.hashGet(redisKey, String.valueOf(productId));
+        product = redisService.getKey(redisKey, Product.class);
 
         if (product != null){
             LOGGER.info("Get product by id successfully (Redis) " + productId);
@@ -89,7 +85,6 @@ public class ProductServiceImpl implements ProductService {
 
         product = productRepository.getProductById(productId);
         if (product!=null){
-//            redisService.hashSet(redisKey, String.valueOf(productId), product);
             redisService.set(redisKey, product);
             LOGGER.info("Set product by id Redis successfully " + productId);
 
@@ -114,7 +109,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void edit(long id, CreateProduct createProduct, MultipartFile avatar,MultipartFile img1,MultipartFile img2,MultipartFile img3) {
-        String redisKey = "productById";
         var check = productRepository.getProductById(id);
         if (check==null){
             throw new ProductNotFoundException("Not found product by id: " + id);
@@ -128,7 +122,6 @@ public class ProductServiceImpl implements ProductService {
         product.setCreated_by(createProduct.getCreated_by());
         productRepository.editProduct(id, product);
         LOGGER.info(String.format("Edit product successfully!"));
-        redisService.deleteHashSet(redisKey, String.valueOf(id));
     }
 
     public Product mapToEntity(CreateProduct createProduct){

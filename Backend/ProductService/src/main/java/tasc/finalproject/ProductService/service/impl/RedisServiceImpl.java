@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import tasc.finalproject.ProductService.entity.Product;
 import tasc.finalproject.ProductService.model.ProductsResponse;
@@ -21,128 +23,79 @@ import java.util.Set;
 public class RedisServiceImpl implements RedisService {
 
     private RedisTemplate<String, Object> redisTemplate;
-    private HashOperations<String, String, Object> hashOperations;
+    private ValueOperations<String, Object> valueOperations;
+    private SetOperations<String, Object> setOperations;
     private ObjectMapper objectMapper;
 
     public RedisServiceImpl(RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
-        this.hashOperations = redisTemplate.opsForHash();
+        this.valueOperations = redisTemplate.opsForValue();
+        this.setOperations = redisTemplate.opsForSet();
         this.objectMapper = objectMapper;
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Override
-    public void set(String key, String value) {
-        redisTemplate.opsForValue().set(key, value);
-    }
-
-    @Override
     public void set(String key, Object object) {
         try {
-            String jsonString = objectMapper.writeValueAsString(object);
-            redisTemplate.opsForValue().set(key, jsonString);
+            valueOperations.set(key, object);
         } catch (Exception e) {
             throw new RuntimeException("Error serializing object to JSON", e);
         }
     }
 
-
     @Override
-    public void hashSet(String key, String field, Object value) {
+    public <T> T getKey(String key, Class<T> tClass) {
         try {
-            String jsonString = objectMapper.writeValueAsString(value);
-            hashOperations.put(key, field, jsonString);
+            Object object = valueOperations.get(key);
+            return objectMapper.convertValue(object, tClass);
         } catch (Exception e) {
-            throw new RuntimeException("Error serializing object to JSON", e);
+            throw new RuntimeException("Error retrieving object from Redis", e);
         }
-        // offline:product:
     }
 
     @Override
-    public boolean hashExists(String key, String field) {
-        return hashOperations.hasKey(key, field);
-    }
-
-    @Override
-    public Object getKey(String key) {
-        return redisTemplate.opsForValue().get(key);
-    }
-
-    @Override
-    public Map<String, Object> getField(String key) {
-        return hashOperations.entries(key);
-    }
-
-    @Override
-    public Object hashGet(String key, String field) {
+    public boolean hasKey(String key) {
         try {
-            String jsonString = (String) hashOperations.get(key, field);
-            if (jsonString == null) {
-                return null;
+            return redisTemplate.hasKey(key);
+        } catch (Exception e) {
+            throw new RuntimeException("Error checking key existence in Redis", e);
+        }
+    }
+
+    @Override
+    public void deleteKey(String key) {
+        try {
+            redisTemplate.delete(key);
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting key from Redis", e);
+        }
+    }
+
+    @Override
+    public void deleteAll() {
+        try {
+            Set<String> keys = redisTemplate.keys("*");
+            if (keys != null && !keys.isEmpty()) {
+                redisTemplate.delete(keys);
             }
-            return objectMapper.readValue(jsonString, Product.class);
         } catch (Exception e) {
-            throw new RuntimeException("Error deserializing JSON to object", e);
+            throw new RuntimeException("Error deleting all keys from Redis", e);
         }
     }
 
     @Override
-    public List<Object> hashGetByFieldPrefix(String key, String fieldPrefix) {
-        List<Object> objects = new ArrayList<>();
-
-        Map<String, Object> hashEntries = hashOperations.entries(key);
-        for (Map.Entry<String, Object> entry: hashEntries.entrySet()
-             ) {
-            objects.add(entry.getValue());
-        }
-        return objects;
-    }
-
-    @Override
-    public Set<String> getFieldPrefixes(String key) {
-        return hashOperations.entries(key).keySet();
-    }
-
-    @Override
-    public void deleteHashSet(String key) {
-        redisTemplate.delete(key);
-    }
-
-    @Override
-    public void deleteHashSet(String key, String field) {
-        hashOperations.delete(key, field);
-    }
-
-    @Override
-    public void deleteHashSet(String key, List<String> fields) {
-        for (String field: fields
-             ) {
-            hashOperations.delete(key, field);
-        }
-    }
-
-    @Override
-    public void setListProduct(String key, List<ProductsResponse> list) {
+    public void deleteByPrefix(String prefix) {
         try {
-            String value = objectMapper.writeValueAsString(list);
-            set(key, value);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public List<ProductsResponse> getListProduct(String key) {
-        try {
-            String jsonString = (String) getKey(key);
-            if (jsonString == null) {
-                return null;
+            Set<String> keys = redisTemplate.keys(prefix + "*");
+            if (keys != null && !keys.isEmpty()) {
+                redisTemplate.delete(keys);
             }
-            return objectMapper.readValue(jsonString, new TypeReference<List<ProductsResponse>>() {});
         } catch (Exception e) {
-            throw new RuntimeException("Error deserializing JSON to list", e);
+            throw new RuntimeException("Error deleting keys with prefix from Redis", e);
         }
     }
+
 
 }
