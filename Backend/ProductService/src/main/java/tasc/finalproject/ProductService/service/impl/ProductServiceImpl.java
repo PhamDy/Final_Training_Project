@@ -1,8 +1,12 @@
 package tasc.finalproject.ProductService.service.impl;
 
+import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tasc.finalproject.ProductService.entity.Product;
@@ -15,38 +19,58 @@ import tasc.finalproject.ProductService.repository.DaoProductRepository;
 import tasc.finalproject.ProductService.service.ImageUploadService;
 import tasc.finalproject.ProductService.service.ProductService;
 import tasc.finalproject.ProductService.service.RedisService;
+import tasc.finalproject.ProductService.service.thread.CacheProductAll;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
+@EnableScheduling
 public class ProductServiceImpl implements ProductService {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
-
-    @Autowired
+    public static final int NUM_THREAD = 5;
+    final int size = 10;
+    int offset = 0;
+    public static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class)   ;
     private DaoProductRepository productRepository;
-
-    @Autowired
     private ImageUploadService imageUploadService;
-
-    @Autowired
     private RedisService redisService;
 
-    @Override
-    public Page<ProductsResponse> getProductAll(String name, int size, int offset) {
+    public ProductServiceImpl(DaoProductRepository productRepository, ImageUploadService imageUploadService, RedisService redisService) {
+        this.productRepository = productRepository;
+        this.imageUploadService = imageUploadService;
+        this.redisService = redisService;
+    }
 
-//        String redisKey = "List product";
-//        List<ProductsResponse> productList = redisService.getListProduct(redisKey);
-//
-//        if (productList != null) {
-//            LOGGER.info("Get list product from Redis successfully ... !");
-//            return productList;
-//        }
-//
-//        LOGGER.info("Get list product successfully !");
-//        productList = productRepository.getProductAll();
-//
-//        redisService.setListProduct(redisKey, productList);
-//
-//        return productList;
+    public static BlockingQueue<Product> productBlockingQueue = new LinkedBlockingQueue<>();
+
+    @Scheduled(cron = "0 0/5 * * * ?")
+//    @Scheduled(fixedDelay = 2000)
+    @PostConstruct
+    public void initCacheAll(){
+        System.out.println("Start");
+        autoSaveProductAll();
+        while (true){
+            var list = productRepository.listProduct(size, offset);
+            productBlockingQueue.addAll(list);
+            offset+=10;
+            if (list==null){
+                break;
+            }
+        }
+    }
+
+    // Đa tiến trình
+    private void autoSaveProductAll() {
+        ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREAD);
+        for (int i = 1; i <= NUM_THREAD; i++) {
+            executorService.submit(new CacheProductAll(redisService));
+        }
+    }
+
+    public Page<ProductsResponse> getProductAll(String name, int size, int offset) {
         productRepository.listProduct(name, size, offset );
         return productRepository.listProduct(name, size, offset );
 
@@ -54,9 +78,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductById(long productId) {
+        String redisKey = "offline:product:" + productId;
+        Product product;
+        product = (Product) redisService.hashGet(redisKey, String.valueOf(productId));
 
-        var product = productRepository.getProductById(productId);
-        LOGGER.info(String.format("Get product by id: " + productId));
+        if (product != null){
+            LOGGER.info("Get product by id successfully (Redis) " + productId);
+            return product;
+        }
+
+        product = productRepository.getProductById(productId);
+        if (product!=null){
+//            redisService.hashSet(redisKey, String.valueOf(productId), product);
+            redisService.set(redisKey, product);
+            LOGGER.info("Set product by id Redis successfully " + productId);
+
+            return product;
+        }
         return product;
     }
 
@@ -76,6 +114,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void edit(long id, CreateProduct createProduct, MultipartFile avatar,MultipartFile img1,MultipartFile img2,MultipartFile img3) {
+        String redisKey = "productById";
         var check = productRepository.getProductById(id);
         if (check==null){
             throw new ProductNotFoundException("Not found product by id: " + id);
@@ -89,6 +128,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCreated_by(createProduct.getCreated_by());
         productRepository.editProduct(id, product);
         LOGGER.info(String.format("Edit product successfully!"));
+        redisService.deleteHashSet(redisKey, String.valueOf(id));
     }
 
     public Product mapToEntity(CreateProduct createProduct){

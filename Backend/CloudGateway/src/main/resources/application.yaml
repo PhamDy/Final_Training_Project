@@ -1,5 +1,5 @@
 server:
-  port: 9091
+  port: 9094
 
 spring:
   application:
@@ -13,30 +13,10 @@ spring:
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/public/api/v1/product/**
-          metadata:
-            cors:
-              allowedOrigins: '*'
-              allowedMethods:
-                - GET
-                - POST
-                - PUT
-                - DELETE
-              allowedHeaders: '*'
-              maxAge: 30
         - id: PRODUCT-SERVICE-PRIVATE
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/private/api/v1/product/**
-          metadata:
-            cors:
-              allowedOrigins: '*'
-              allowedMethods:
-                - GET
-                - POST
-                - PUT
-                - DELETE
-              allowedHeaders: '*'
-              maxAge: 30
         - id: CART-SERVICE-PRIVATE
           uri: lb://CART-SERVICE
           predicates:
@@ -69,8 +49,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "http://localhost:9090/realms/oauthrealm"
-          jwk-set-uri: "http://localhost:9090/realms/oauthrealm/protocol/openid-connect/certs"
+          issuer-uri: http://localhost:9091/realms/master
+          jwk-set-uri: http://localhost:9091/realms/master/protocol/openid-connect/certs
 
 jwt:
   auth:

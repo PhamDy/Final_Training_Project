@@ -10,7 +10,7 @@ public interface RedisService {
 
     void set(String key, String value);
 
-    void setTimeToLive(String key, long timeOutInDays);
+    void set(String key, Object object);
 
     void hashSet(String key, String field, Object value);
 
@@ -26,11 +26,11 @@ public interface RedisService {
 
     Set<String> getFieldPrefixes(String key);
 
-    void delete(String key);
+    void deleteHashSet(String key);
 
-    void delete(String key, String field);
+    void deleteHashSet(String key, String field);
 
-    void delete(String key, List<String> fields);
+    void deleteHashSet(String key, List<String> fields);
 
     void setListProduct(String key, List<ProductsResponse> list);
 

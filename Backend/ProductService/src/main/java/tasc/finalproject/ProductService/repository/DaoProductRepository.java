@@ -16,6 +16,8 @@ public interface DaoProductRepository {
 
     void editProduct(long productId ,Product product);
 
-    Page<ProductsResponse> listProduct(String name, int size, int offset) ;
+    Page<ProductsResponse> listProduct(String name, int size, int offset);
+
+    List<Product> listProduct(int size, int offset);
 
 }

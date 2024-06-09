@@ -11,7 +11,6 @@ spring:
           uri: https://github.com/PhamDy/spring-app-config
           clone-on-start: true
 
-
 eureka:
   instance:
     prefer-ip-address: true

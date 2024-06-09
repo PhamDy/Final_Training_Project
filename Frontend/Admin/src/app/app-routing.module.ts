@@ -6,39 +6,62 @@ import { ProductFormComponent } from './pages/products/product-form/product-form
 import { CategoryListComponent } from './pages/categories/category-list/category-list.component';
 import { CategoryFormComponent } from './pages/categories/category-form/category-form.component';
 import { UserComponent } from './pages/user/user.component';
+import { AuthKeyClockGuard } from './routeguards/auth.route';
 
 const routes: Routes = [
   {
     path: "",
-    component: DashboardComponent
+    component: DashboardComponent,
+    canActivate: [AuthKeyClockGuard]
   },
   {
     path: "product",
-    component: ProductListComponent
+    component: ProductListComponent,
+    canActivate: [AuthKeyClockGuard], data: {
+      roles: ['User' ,'Admin']
+    }
   },
   {
     path: "product/:id",
-    component: ProductFormComponent
+    component: ProductFormComponent,
+    canActivate: [AuthKeyClockGuard], data: {
+      roles: ['Admin']
+    }
   },
   {
     path: "newProduct",
-    component: ProductFormComponent
+    component: ProductFormComponent,
+    canActivate: [AuthKeyClockGuard], data: {
+      roles: ['Admin']
+    }
   },
   {
     path: "category",
-    component: CategoryListComponent
+    component: CategoryListComponent,
+    canActivate: [AuthKeyClockGuard], data: {
+      roles: ['User' ,'Admin']
+    }
   },
   {
     path: "category/:id",
-    component: CategoryFormComponent
+    component: CategoryFormComponent,
+    canActivate: [AuthKeyClockGuard], data: {
+      roles: ['User' ,'Admin']
+    }
   },
   {
     path: "newCategory",
-    component: CategoryFormComponent
+    component: CategoryFormComponent,
+    canActivate: [AuthKeyClockGuard], data: {
+      roles: ['User' ,'Admin']
+    }
   },
   {
     path: "user",
-    component: UserComponent
+    component: UserComponent,
+    canActivate: [AuthKeyClockGuard], data: {
+      roles: ['Admin']
+    }
   },
   
 

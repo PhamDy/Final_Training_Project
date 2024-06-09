@@ -2,25 +2,15 @@ package tasc.finalproject.CloudGateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import reactor.core.publisher.Mono;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-
 
 @Configuration
 @EnableWebFluxSecurity
@@ -39,6 +29,37 @@ public class SecurityConfig {
         return serverHttpSecurity.build();
     }
 
+//    @Bean
+//    public UrlBasedCorsConfigurationSource  corsFilter() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(List.of("*"));
+//        configuration.setAllowedHeaders(List.of("*"));
+//        configuration.setAllowedMethods(List.of("*"));
+//        UrlBasedCorsConfigurationSource source
+//                = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
+//    @Bean
+//    public CorsWebFilter corsWebFilter() {
+//        return new CorsWebFilter(corsConfigurationSource());
+//    }
+
+    @Bean
+    public CorsWebFilter filter(){
+        org.springframework.web.cors.CorsConfiguration config= new CorsConfiguration();
+        config.setAllowCredentials(false);
+        config.setAllowedOrigins(Arrays.asList("*","*"));
+        config.addExposedHeader("Authorization");
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type",
+                "Content-Disposition", "Content-Length",
+                "Accept", "Authorization", "Cookie"));
+        config.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", config);
+        return new CorsWebFilter(source);
+    }
 
 }

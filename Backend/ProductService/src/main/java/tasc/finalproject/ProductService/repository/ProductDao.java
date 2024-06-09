@@ -3,8 +3,6 @@ package tasc.finalproject.ProductService.repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -105,10 +103,7 @@ public class ProductDao implements DaoProductRepository{
 
         int totalElements;
         try {
-//            total = jdbcTemplate.queryForObject(rowCountSql, new Object[]{"%" + name + "%"}, Integer.class);
-
             totalElements = jdbcTemplate.queryForObject(rowCountSql, name != null && !name.isEmpty() ? new Object[]{"%" + name + "%"} : new Object[]{}, Integer.class);
-
         } catch (DataAccessException e) {
             throw new RuntimeException("Failed to count users", e);
         }
@@ -139,5 +134,13 @@ public class ProductDao implements DaoProductRepository{
         return new tasc.finalproject.ProductService.model.Page<ProductsResponse>(list, size, offset, totalPage, totalElements);
     }
 
-
+    @Override
+    public List<Product> listProduct(int size, int offset) {
+        try {
+            String sql = "SELECT * FROM products p LIMIT ? OFFSET ?";
+            return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), size, offset);
+        }catch (DataAccessException e){
+            return null;
+        }
+    }
 }

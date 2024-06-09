@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
+
 
 @Service
 public class RedisServiceImpl implements RedisService {
@@ -39,9 +38,15 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void setTimeToLive(String key, long timeOutInDays) {
-        redisTemplate.expire(key, timeOutInDays, TimeUnit.DAYS);
+    public void set(String key, Object object) {
+        try {
+            String jsonString = objectMapper.writeValueAsString(object);
+            redisTemplate.opsForValue().set(key, jsonString);
+        } catch (Exception e) {
+            throw new RuntimeException("Error serializing object to JSON", e);
+        }
     }
+
 
     @Override
     public void hashSet(String key, String field, Object value) {
@@ -51,6 +56,7 @@ public class RedisServiceImpl implements RedisService {
         } catch (Exception e) {
             throw new RuntimeException("Error serializing object to JSON", e);
         }
+        // offline:product:
     }
 
     @Override
@@ -99,17 +105,17 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void delete(String key) {
+    public void deleteHashSet(String key) {
         redisTemplate.delete(key);
     }
 
     @Override
-    public void delete(String key, String field) {
+    public void deleteHashSet(String key, String field) {
         hashOperations.delete(key, field);
     }
 
     @Override
-    public void delete(String key, List<String> fields) {
+    public void deleteHashSet(String key, List<String> fields) {
         for (String field: fields
              ) {
             hashOperations.delete(key, field);

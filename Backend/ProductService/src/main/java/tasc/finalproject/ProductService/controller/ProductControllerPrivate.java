@@ -36,6 +36,7 @@ public class ProductControllerPrivate {
         return new ResponseEntity<>("test Product private Admin", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/saveProduct")
     public ResponseEntity<?> saveProduct(@ModelAttribute CreateProduct createProduct,
                                          @RequestParam(value = "avatar") MultipartFile avatar,
@@ -56,7 +57,7 @@ public class ProductControllerPrivate {
         return new ResponseEntity<>( HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('Admin')")
     @PostMapping("/saveCategory")
     public ResponseEntity<Category> addCategory(@RequestBody Category category){
         categoryService.saveCategory(category);
