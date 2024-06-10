@@ -1,21 +1,15 @@
 package tasc.finalproject.ProductService.service.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 import tasc.finalproject.ProductService.entity.Product;
-import tasc.finalproject.ProductService.model.ProductsResponse;
 import tasc.finalproject.ProductService.service.RedisService;
 
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -24,13 +18,13 @@ public class RedisServiceImpl implements RedisService {
 
     private RedisTemplate<String, Object> redisTemplate;
     private ValueOperations<String, Object> valueOperations;
-    private SetOperations<String, Object> setOperations;
+    private ListOperations<String, Object> listOperations;
     private ObjectMapper objectMapper;
 
     public RedisServiceImpl(RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
         this.valueOperations = redisTemplate.opsForValue();
-        this.setOperations = redisTemplate.opsForSet();
+        this.listOperations = redisTemplate.opsForList();
         this.objectMapper = objectMapper;
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -95,6 +89,40 @@ public class RedisServiceImpl implements RedisService {
         } catch (Exception e) {
             throw new RuntimeException("Error deleting keys with prefix from Redis", e);
         }
+    }
+
+    @Override
+    public void setList(String key, Object object) {
+        try {
+            listOperations.leftPush(key, object);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setListProduct(String key, List<Product> list) {
+        try {
+            list.stream().forEach(item -> listOperations.rightPush(key, item));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public <T> T getAfterDelete(String key, Class<T> tClass) {
+        try {
+            var product = listOperations.leftPop(key, Duration.ofSeconds(5));
+            return objectMapper.convertValue(product, tClass);
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean checkSizeList(String key) {
+        return listOperations.size(key)!=0;
     }
 
 

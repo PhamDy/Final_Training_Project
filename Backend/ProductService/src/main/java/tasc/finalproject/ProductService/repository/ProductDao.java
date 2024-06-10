@@ -13,6 +13,7 @@ import tasc.finalproject.ProductService.model.Page;
 import tasc.finalproject.ProductService.model.ProductsResponse;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -130,9 +131,10 @@ public class ProductDao implements DaoProductRepository{
         } else {
             totalPage = (totalElements/size) + 1;
         }
-
         return new tasc.finalproject.ProductService.model.Page<ProductsResponse>(list, size, offset, totalPage, totalElements);
     }
+
+
 
     @Override
     public List<Product> listProduct(int size, int offset) {
@@ -141,6 +143,52 @@ public class ProductDao implements DaoProductRepository{
             return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), size, offset);
         }catch (DataAccessException e){
             return null;
+        }
+    }
+
+    @Override
+    public LocalDateTime lastRequestProduct() {
+        try {
+            String sql = "SELECT last_request FROM process p WHERE name = 'product_details'";
+            return jdbcTemplate.queryForObject(sql, LocalDateTime.class);
+        }catch (DataAccessException e){
+            return null;
+        }
+    }
+
+    @Override
+    public void updateLastRequestProduct() {
+        try {
+            String sql = "UPDATE process SET last_request = ? WHERE name = 'product_details'";
+             jdbcTemplate.update(sql, LocalDateTime.now());
+        }catch (DataAccessException e){
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public List<Product> listProductUpdate(LocalDateTime lastRequest) {
+        try {
+            String sql = "SELECT * FROM products p" +
+                    " WHERE updated_at > ?";
+            return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), lastRequest);
+        }catch (DataAccessException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean checkProductUpdate() {
+        try {
+            String sql = "SELECT MAX(updated_at) FROM products p";
+            LocalDateTime maxUpdatedAt = jdbcTemplate.queryForObject(sql, LocalDateTime.class);
+            var lastRequest = lastRequestProduct();
+            return maxUpdatedAt!=null && maxUpdatedAt.isAfter(lastRequest);
+        }catch (DataAccessException e){
+            e.printStackTrace();
+            return false;
         }
     }
 }

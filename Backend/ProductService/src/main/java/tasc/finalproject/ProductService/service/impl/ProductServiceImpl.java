@@ -16,20 +16,21 @@ import tasc.finalproject.ProductService.repository.DaoProductRepository;
 import tasc.finalproject.ProductService.service.ImageUploadService;
 import tasc.finalproject.ProductService.service.ProductService;
 import tasc.finalproject.ProductService.service.RedisService;
-import tasc.finalproject.ProductService.service.thread.CacheProductAll;
+import tasc.finalproject.ProductService.service.thread.ThreadCacheProductAll;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 @EnableScheduling
 public class ProductServiceImpl implements ProductService {
 
-    public static final int NUM_THREAD = 3;
-    final int size = 10;
+    public static final int NUM_THREAD = 2;
+    public final static int size = 10;
+    public static final String keyQueueProduct = "ProductService:queueProduct";
+    public static final String keyProductDetails = "ProductService:productDetails:";
     public static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
+
     private DaoProductRepository productRepository;
     private ImageUploadService imageUploadService;
     private RedisService redisService;
@@ -40,12 +41,10 @@ public class ProductServiceImpl implements ProductService {
         this.redisService = redisService;
     }
 
-    public static BlockingQueue<Product> productBlockingQueue = new LinkedBlockingQueue<>();
-
 //    @Scheduled(cron = "0 0 16 * * ?")
-    @Scheduled(fixedRate = 5000)
+//    @Scheduled(fixedRate = 5000)
     public void initCacheAll(){
-        System.out.println("Start");
+        LOGGER.info("Start...");
         autoSaveProductAll();
         int offset = 0;
         while (true){
@@ -53,16 +52,30 @@ public class ProductServiceImpl implements ProductService {
             if (list==null || list.isEmpty()){
                 break;
             }
-            productBlockingQueue.addAll(list);
+            redisService.setListProduct(keyQueueProduct, list);
             offset+=size;
         }
+        LOGGER.info("Cache initialization finished.");
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void initCheckUpdate(){
+        LOGGER.info("Start check product update");
+        var lastRequest = productRepository.lastRequestProduct();
+        if (productRepository.checkProductUpdate()){
+            var list = productRepository.listProductUpdate(lastRequest);
+            list.forEach(product -> redisService.set(keyProductDetails+product.getProduct_id(), product));
+            productRepository.updateLastRequestProduct();
+            LOGGER.info("Update product details on Redis cache successfully! " + keyProductDetails);
+        }
+        LOGGER.info("Not found Product update");
     }
 
     // Đa tiến trình
     private void autoSaveProductAll() {
         ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREAD);
         for (int i = 1; i <= NUM_THREAD; i++) {
-            executorService.submit(new CacheProductAll(redisService));
+            executorService.submit(new ThreadCacheProductAll(redisService));
         }
     }
 
@@ -74,7 +87,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProductById(long productId) {
-        String redisKey = "offline:product:" + productId;
+        String redisKey = keyProductDetails + productId;
         Product product;
         product = redisService.getKey(redisKey, Product.class);
 
@@ -84,12 +97,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         product = productRepository.getProductById(productId);
-        if (product!=null){
-            redisService.set(redisKey, product);
-            LOGGER.info("Set product by id Redis successfully " + productId);
-
-            return product;
-        }
         return product;
     }
 

@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `category` (
     `category_id` BIGINT AUTO_INCREMENT  PRIMARY KEY,
     `name` VARCHAR(100) NOT NULL UNIQUE,
-    `updated_at` TIMESTAMP NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_by` VARCHAR(50) DEFAULT NULL
@@ -21,11 +21,20 @@ CREATE TABLE IF NOT EXISTS `products` (
     `discount` FLOAT NULL,
     `quantity` BIGINT NOT NULL,
     FOREIGN KEY (`category_id`) REFERENCES category(category_id),
-    `updated_at` TIMESTAMP NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_by` VARCHAR(50) DEFAULT NULL
 );
+
+CREATE TABLE IF NOT EXISTS `process` (
+    `id` BIGINT AUTO_INCREMENT  PRIMARY KEY,
+    `name` VARCHAR(100) NOT NULL UNIQUE,
+    `last_request` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO `process` (`name`)
+VALUE ('product_details');
+
 
 INSERT INTO `category` (`name`, `created_by`)
 VALUE ('table', 'Admin'),
@@ -83,4 +92,7 @@ FROM products p
 LIMIT 10 OFFSET 20;
 
 SELECT count(1) AS ROW_COUNT  FROM products
+
+SELECT MAX(updated_at) FROM products p
                
+SELECT * FROM products p WHERE (SELECT MAX(updated_at) FROM products) > '2024-06-09 15:59:53'          
