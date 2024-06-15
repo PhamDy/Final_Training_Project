@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
    `user_id` BIGINT NOT NULL,
     `delivery_id` BIGINT NOT NULL,
     `status` ENUM('Success', 'Pending', 'Confirmed', 'Delivering', 'Cancel'),
-    `updated_at` TIMESTAMP NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_by` VARCHAR(50) DEFAULT NULL
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `order_details` (
 	`order_id` BIGINT NOT NULL,
    `product_id` BIGINT NOT NULL,
     FOREIGN KEY (`order_id`) REFERENCES orders(order_id),
-    `updated_at` TIMESTAMP NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_by` VARCHAR(50) DEFAULT NULL

@@ -16,5 +16,6 @@ public interface DaoCategoryRepository {
 
     int deleteCategoryById(long id);
 
+    List<Long> getCategoryId();
 
 }

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AccountService/AccountService.iml" filepath="$PROJECT_DIR$/AccountService/AccountService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AuthService/AuthService.iml" filepath="$PROJECT_DIR$/AuthService/AuthService.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Backend.iml" filepath="$PROJECT_DIR$/.idea/Backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/CartService/CartService.iml" filepath="$PROJECT_DIR$/CartService/CartService.iml" />
       <module fileurl="file://$PROJECT_DIR$/CloudGateway/CloudGateway.iml" filepath="$PROJECT_DIR$/CloudGateway/CloudGateway.iml" />
@@ -13,7 +14,7 @@
       <module fileurl="file://$PROJECT_DIR$/PaymentService/PaymentService.iml" filepath="$PROJECT_DIR$/PaymentService/PaymentService.iml" />
       <module fileurl="file://$PROJECT_DIR$/ProductService/ProductService.iml" filepath="$PROJECT_DIR$/ProductService/ProductService.iml" />
       <module fileurl="file://$PROJECT_DIR$/Service-registry/Service-registry.iml" filepath="$PROJECT_DIR$/Service-registry/Service-registry.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../../Java/Udemy/security/section_13/springsecsection_13/springsecsection_13.iml" filepath="$PROJECT_DIR$/../../../Java/Udemy/security/section_13/springsecsection_13/springsecsection_13.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../Java/Udemy/security/section9/springsecsection9/springsecsection9.iml" filepath="$PROJECT_DIR$/../../../Java/Udemy/security/section9/springsecsection9/springsecsection9.iml" />
     </modules>
   </component>
 </project>

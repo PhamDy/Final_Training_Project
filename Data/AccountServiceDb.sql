@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `role` (
     `role_id` BIGINT AUTO_INCREMENT  PRIMARY KEY,
     `name` ENUM('ROLE_Admin', 'ROLE_Employee', 'ROLE_Customer'),
-    `updated_at` TIMESTAMP NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_by` VARCHAR(50) DEFAULT NULL
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `otp` VARCHAR(5) NULL,
     `otp_generated_time` DATETIME,accountserviceDb
      `enabled` TINYINT(1) DEFAULT 0,
-    `updated_at` TIMESTAMP NULL,
+   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_by` VARCHAR(50) DEFAULT NULL

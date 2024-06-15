@@ -9,6 +9,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="DeliveryService" />
         <module name="ProductService" />
+        <module name="AuthService" />
+        <module name="springsecsection9" />
         <module name="CartService" />
         <module name="Service-registry" />
         <module name="NotificationService" />
@@ -16,12 +18,12 @@
         <module name="OrderService" />
         <module name="AccountService" />
         <module name="PaymentService" />
-        <module name="springsecsection_13" />
         <module name="CloudGateway" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="AccountService" target="17" />
+      <module name="AuthService" target="17" />
       <module name="CartService" target="17" />
       <module name="CloudGateway" target="17" />
       <module name="ConfigServer" target="17" />
@@ -31,12 +33,14 @@
       <module name="PaymentService" target="17" />
       <module name="ProductService" target="17" />
       <module name="Service-registry" target="17" />
+      <module name="springsecsection9" target="17" />
       <module name="springsecsection_13" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="AccountService" options="-parameters" />
+      <module name="AuthService" options="-parameters" />
       <module name="CartService" options="-parameters" />
       <module name="CloudGateway" options="-parameters" />
       <module name="ConfigServer" options="-parameters" />
@@ -46,6 +50,7 @@
       <module name="PaymentService" options="-parameters" />
       <module name="ProductService" options="-parameters" />
       <module name="Service-registry" options="-parameters" />
+      <module name="springsecsection9" options="-parameters" />
       <module name="springsecsection_13" options="-parameters" />
     </option>
   </component>

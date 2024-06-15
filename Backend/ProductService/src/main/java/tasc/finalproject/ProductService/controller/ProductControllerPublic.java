@@ -6,18 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tasc.finalproject.ProductService.entity.Category;
 import tasc.finalproject.ProductService.entity.Product;
+import tasc.finalproject.ProductService.model.FilterDto;
 import tasc.finalproject.ProductService.model.Page;
 import tasc.finalproject.ProductService.model.ProductsResponse;
 import tasc.finalproject.ProductService.repository.DaoProductRepository;
 import tasc.finalproject.ProductService.service.CategoryService;
 import tasc.finalproject.ProductService.service.ProductService;
 import tasc.finalproject.ProductService.service.RedisService;
-import tasc.finalproject.ProductService.service.impl.ProductServiceImpl;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
+
+import static tasc.finalproject.ProductService.schedule.CacheProduct.*;
 
 @RestController
 @RequestMapping("/public/api/v1/product")
@@ -30,12 +30,11 @@ public class ProductControllerPublic {
     private final RedisService redisService;
     private final DaoProductRepository productRepository;
 
-
     @GetMapping("/")
-    public ResponseEntity<Page<ProductsResponse>> getProductAll(@RequestParam(required = false) String name,
+    public ResponseEntity<Page<ProductsResponse>> getProductAll(@RequestBody(required = false) FilterDto dto,
                                                                 @RequestParam int size,
                                                                 @RequestParam int offset) {
-        return new ResponseEntity<>(productService.getProductAll(name, size , offset), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getProductAll(dto.getName(), dto.getCategory(), size, offset), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -61,7 +60,7 @@ public class ProductControllerPublic {
 
     @DeleteMapping("/prefix")
     public String deleteProductsByPrefix() {
-        redisService.deleteByPrefix(ProductServiceImpl.keyProductDetails);
+        redisService.deleteByPrefix(keyProductDetails);
         return "Ok";
     }
 
@@ -81,17 +80,10 @@ public class ProductControllerPublic {
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
-    public LocalDateTime convertStringToLocalDateTime(String dateTimeStr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        try {
-            LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, formatter);
-            return dateTime;
-        } catch (DateTimeParseException e) {
-            e.printStackTrace();
-            return null;
-        }
+    @GetMapping("/realtedProduct/{id}")
+    public ResponseEntity<List<Product>> listRelated(@PathVariable long id){
+        return new ResponseEntity<>(productService.getListRelatedProduct(id), HttpStatus.OK);
     }
-
 
 
 }

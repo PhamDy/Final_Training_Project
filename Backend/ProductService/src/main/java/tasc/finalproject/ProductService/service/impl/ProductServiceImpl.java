@@ -2,8 +2,6 @@ package tasc.finalproject.ProductService.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tasc.finalproject.ProductService.entity.Product;
@@ -16,19 +14,19 @@ import tasc.finalproject.ProductService.repository.DaoProductRepository;
 import tasc.finalproject.ProductService.service.ImageUploadService;
 import tasc.finalproject.ProductService.service.ProductService;
 import tasc.finalproject.ProductService.service.RedisService;
-import tasc.finalproject.ProductService.service.thread.ThreadCacheProductAll;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+
+import static tasc.finalproject.ProductService.schedule.CacheProduct.keyCategory;
+import static tasc.finalproject.ProductService.schedule.CacheProduct.keyProductDetails;
+
 
 @Service
-@EnableScheduling
 public class ProductServiceImpl implements ProductService {
 
-    public static final int NUM_THREAD = 2;
-    public final static int size = 10;
-    public static final String keyQueueProduct = "ProductService:queueProduct";
-    public static final String keyProductDetails = "ProductService:productDetails:";
     public static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     private DaoProductRepository productRepository;
@@ -41,48 +39,8 @@ public class ProductServiceImpl implements ProductService {
         this.redisService = redisService;
     }
 
-//    @Scheduled(cron = "0 0 16 * * ?")
-//    @Scheduled(fixedRate = 5000)
-    public void initCacheAll(){
-        LOGGER.info("Start...");
-        autoSaveProductAll();
-        int offset = 0;
-        while (true){
-            var list = productRepository.listProduct(size, offset);
-            if (list==null || list.isEmpty()){
-                break;
-            }
-            redisService.setListProduct(keyQueueProduct, list);
-            offset+=size;
-        }
-        LOGGER.info("Cache initialization finished.");
-    }
-
-    @Scheduled(fixedRate = 5000)
-    public void initCheckUpdate(){
-        LOGGER.info("Start check product update");
-        var lastRequest = productRepository.lastRequestProduct();
-        if (productRepository.checkProductUpdate()){
-            var list = productRepository.listProductUpdate(lastRequest);
-            list.forEach(product -> redisService.set(keyProductDetails+product.getProduct_id(), product));
-            productRepository.updateLastRequestProduct();
-            LOGGER.info("Update product details on Redis cache successfully! " + keyProductDetails);
-        }
-        LOGGER.info("Not found Product update");
-    }
-
-    // Đa tiến trình
-    private void autoSaveProductAll() {
-        ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREAD);
-        for (int i = 1; i <= NUM_THREAD; i++) {
-            executorService.submit(new ThreadCacheProductAll(redisService));
-        }
-    }
-
-    public Page<ProductsResponse> getProductAll(String name, int size, int offset) {
-        productRepository.listProduct(name, size, offset );
-        return productRepository.listProduct(name, size, offset );
-
+    public Page<ProductsResponse> getProductAll(String name, List<Long> category, int size, int offset) {
+        return productRepository.listProduct(name, category, size, offset );
     }
 
     @Override
@@ -90,14 +48,33 @@ public class ProductServiceImpl implements ProductService {
         String redisKey = keyProductDetails + productId;
         Product product;
         product = redisService.getKey(redisKey, Product.class);
-
-        if (product != null){
+        if (product == null){
+            product = productRepository.getProductById(productId);
             LOGGER.info("Get product by id successfully (Redis) " + productId);
-            return product;
+            redisService.set(redisKey, product);
+            return  product;
         }
-
-        product = productRepository.getProductById(productId);
         return product;
+    }
+
+    @Override
+    public List<Product> getListRelatedProduct(long productId) {
+        long categoryId = productRepository.categoryIdByProductId(productId);
+
+        var productIdList = ((List<Integer>) redisService.lindex(keyCategory+categoryId, 0));
+        if (productIdList==null){
+            var list = productRepository.getProductByCategoryId(categoryId);
+            return list;
+        }
+        LOGGER.info(productIdList.toString());
+
+        Collections.shuffle(productIdList);
+        List<Product> listRelatedProduct = new ArrayList<>();
+
+        productIdList.subList(0, 4).forEach(id ->
+                    listRelatedProduct.add(redisService.getKey(keyProductDetails+id, Product.class))
+                );
+        return listRelatedProduct;
     }
 
     @Override

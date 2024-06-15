@@ -20,7 +20,6 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     @Autowired
@@ -48,9 +47,9 @@ public class WebSecurityConfig {
                                 .requestMatchers("/public/**").permitAll()
                                 .anyRequest()
                                 .authenticated())
-                .oauth2ResourceServer()
-                    .jwt()
-                        .jwtAuthenticationConverter(jwtAuthConverter);
+                .oauth2ResourceServer(oauth2ResourceServerCustomizer ->
+                        oauth2ResourceServerCustomizer.jwt(jwtCustomizer ->
+                                jwtCustomizer.jwtAuthenticationConverter(jwtAuthConverter)));
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         return http.build();
     }

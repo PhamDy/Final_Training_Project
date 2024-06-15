@@ -19,11 +19,19 @@ public interface RedisService {
     void deleteByPrefix(String prefix);
 
     // List cache
-    void setList(String key, Object object);
+    void setListProducts(String key, Object object);
 
-    void setListProduct(String key, List<Product> list);
+    void setListProducts(String key, List<Product> list);
 
-    <T> T getAfterDelete(String key, Class<T> tClass);
+    void setListCategoryId(String key, List<Long> list);
+
+    Object lindex(String key, long index);
+
+    <T> T getAfterDeleteListProduct(String key, Class<T> tClass);
+
+     List<Product> getAfterDeleteListProduct(String key);
+
+    List<Object> getListByRange(String key, long start, long end);
 
     boolean checkSizeList(String key);
 

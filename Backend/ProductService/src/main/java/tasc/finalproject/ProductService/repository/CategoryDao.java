@@ -1,5 +1,6 @@
 package tasc.finalproject.ProductService.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -13,10 +14,10 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class CategoryDao implements DaoCategoryRepository{
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<Category> getCategory() {
@@ -70,6 +71,12 @@ public class CategoryDao implements DaoCategoryRepository{
     public int deleteCategoryById(long id) {
         String sql = "DELETE FROM category WHERE category_id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public List<Long> getCategoryId() {
+        String sql = "SELECT category_id FROM category";
+        return jdbcTemplate.queryForList(sql, Long.class);
     }
 
 }

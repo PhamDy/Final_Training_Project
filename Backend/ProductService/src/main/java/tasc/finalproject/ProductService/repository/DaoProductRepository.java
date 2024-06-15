@@ -13,11 +13,13 @@ public interface DaoProductRepository {
 
     Product getProductById(long productId);
 
+    List<Product> getProductByCategoryId(long categoryId);
+
     long saveProduct(Product product);
 
     void editProduct(long productId ,Product product);
 
-    Page<ProductsResponse> listProduct(String name, int size, int offset);
+    Page<ProductsResponse> listProduct(String name, List<Long> category_id, int size, int offset);
 
     List<Product> listProduct(int size, int offset);
 
@@ -28,5 +30,9 @@ public interface DaoProductRepository {
     List<Product> listProductUpdate(LocalDateTime lastRequest);
 
     boolean checkProductUpdate();
+
+    List<Long> listProductIdByCategory(long categoryId);
+
+    long categoryIdByProductId(long productId);
 
 }

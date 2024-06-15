@@ -94,5 +94,11 @@ LIMIT 10 OFFSET 20;
 SELECT count(1) AS ROW_COUNT  FROM products
 
 SELECT MAX(updated_at) FROM products p
-               
-SELECT * FROM products p WHERE (SELECT MAX(updated_at) FROM products) > '2024-06-09 15:59:53'          
+                 
+SELECT category_id FROM products WHERE product_id = 1
+
+SELECT * FROM products WHERE category_id = 1 LIMIT 10 OFFSET 0;
+SELECT * FROM products WHERE category_id = 2 LIMIT 10 OFFSET 0;
+
+SELECT * FROM products WHERE category_id IN (2,1) LIMIT 10 OFFSET 10    
+  

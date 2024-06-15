@@ -1,6 +1,7 @@
 package tasc.finalproject.ProductService.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -14,13 +15,16 @@ import tasc.finalproject.ProductService.model.ProductsResponse;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
+@Slf4j
 public class ProductDao implements DaoProductRepository{
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<ProductsResponse> getProductAll() {
@@ -34,6 +38,16 @@ public class ProductDao implements DaoProductRepository{
         try {
             String sql = "SELECT * FROM products WHERE product_id = ?";
             return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(Product.class), productId);
+        }catch (EmptyResultDataAccessException e){
+            return null;
+        }
+    }
+
+    @Override
+    public List<Product> getProductByCategoryId(long categoryId) {
+        try {
+            String sql = "SELECT * FROM products WHERE category_id = ? LIMIT 4 OFFSET 0";
+            return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(Product.class), categoryId);
         }catch (EmptyResultDataAccessException e){
             return null;
         }
@@ -89,29 +103,45 @@ public class ProductDao implements DaoProductRepository{
 
 
     @Override
-    public Page<ProductsResponse> listProduct(String name, int size, int offset) {
-        String whereClause = "";
-        Object[] params;
+    public Page<ProductsResponse> listProduct(String name, List<Long> category, int size, int offset) {
+        StringBuilder whereName = new StringBuilder();
+        List<Object> paramsList = new ArrayList<>();
 
         if (name != null && !name.isEmpty()) {
-            whereClause = " WHERE product_name LIKE ?";
-            params = new Object[]{"%" + name + "%", size, offset};
-        } else {
-            params = new Object[]{size, offset};
+            whereName.append(" WHERE product_name LIKE ?") ;
+            paramsList.add("%" + name + "%");
         }
 
-        String rowCountSql = "SELECT count(1) AS row_count FROM products" + whereClause;
+        if (category!=null && !category.isEmpty()) {
+            if (whereName.length()>0){
+                whereName.append(" AND ");
+            } else {
+                whereName.append(" WHERE ");
+            }
+            whereName.append("category_id IN (") ;
+            whereName.append(String.join(",", Collections.nCopies(category.size(), "?")));
+            whereName.append(")");
+            paramsList.add(category);
+        }
+        paramsList.add(size);
+        paramsList.add(offset);
+
+        Object[] params = paramsList.toArray();
+        log.info(String.valueOf(params));
+
+        String rowCountSql = "SELECT count(1) AS row_count FROM products" + whereName;
 
         int totalElements;
         try {
-            totalElements = jdbcTemplate.queryForObject(rowCountSql, name != null && !name.isEmpty() ? new Object[]{"%" + name + "%"} : new Object[]{}, Integer.class);
+            totalElements = jdbcTemplate.queryForObject(rowCountSql, paramsList.subList(0, paramsList.size() - 2).toArray(),
+                    Integer.class);
         } catch (DataAccessException e) {
-            throw new RuntimeException("Failed to count users", e);
+            throw new RuntimeException("Failed to count products", e);
         }
 
         String sql = "SELECT p.product_id, p.product_name, p.category_id, " +
                 "p.avatar, p.price, p.status, p.discount, p.quantity " +
-                "FROM products p " + whereClause +
+                "FROM products p " + whereName +
                 " LIMIT ? OFFSET ?";
 
         List<ProductsResponse> list;
@@ -125,16 +155,11 @@ public class ProductDao implements DaoProductRepository{
             throw new RuntimeException("Failed to query users", e);
         }
 
-        int totalPage;
-        if (totalElements%size==0){
-            totalPage = (totalElements/size);
-        } else {
-            totalPage = (totalElements/size) + 1;
-        }
+        int totalPage = (totalElements % size == 0) ? (totalElements / size) : (totalElements / size) + 1;
+        log.info(sql);
+
         return new tasc.finalproject.ProductService.model.Page<ProductsResponse>(list, size, offset, totalPage, totalElements);
     }
-
-
 
     @Override
     public List<Product> listProduct(int size, int offset) {
@@ -166,7 +191,6 @@ public class ProductDao implements DaoProductRepository{
         }
     }
 
-
     @Override
     public List<Product> listProductUpdate(LocalDateTime lastRequest) {
         try {
@@ -189,6 +213,28 @@ public class ProductDao implements DaoProductRepository{
         }catch (DataAccessException e){
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Override
+    public List<Long> listProductIdByCategory(long categoryId) {
+        try {
+            String sql = "SELECT product_id FROM products WHERE category_id = ?";
+            return jdbcTemplate.queryForList(sql, Long.class, categoryId);
+        }catch (DataAccessException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public long categoryIdByProductId(long productId) {
+        try {
+            String sql = "SELECT category_id FROM products WHERE product_id = ?";
+            return jdbcTemplate.queryForObject(sql, Long.class, productId);
+        }catch (DataAccessException e){
+            e.printStackTrace();
+            return 0;
         }
     }
 }

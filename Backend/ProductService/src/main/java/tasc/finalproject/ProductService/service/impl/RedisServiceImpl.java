@@ -9,8 +9,10 @@ import tasc.finalproject.ProductService.entity.Product;
 import tasc.finalproject.ProductService.service.RedisService;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -44,6 +46,7 @@ public class RedisServiceImpl implements RedisService {
         try {
             Object object = valueOperations.get(key);
             return objectMapper.convertValue(object, tClass);
+
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving object from Redis", e);
         }
@@ -92,7 +95,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void setList(String key, Object object) {
+    public void setListProducts(String key, Object object) {
         try {
             listOperations.leftPush(key, object);
         } catch (Exception e){
@@ -101,19 +104,73 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void setListProduct(String key, List<Product> list) {
+    public void setListProducts(String key, List<Product> list) {
         try {
-            list.stream().forEach(item -> listOperations.rightPush(key, item));
+//            list.stream().forEach(item -> listOperations.rightPush(key, item));
+            redisTemplate.opsForList().rightPushAll(key,list);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
     @Override
-    public <T> T getAfterDelete(String key, Class<T> tClass) {
+    public void setListCategoryId(String key, List<Long> list) {
         try {
+            if (hasKey(key)){
+                deleteKey(key);
+            }
+            listOperations.rightPushAll(key ,list);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Object lindex(String key, long index) {
+        try {
+            return listOperations.index(key, index);
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public <T> T getAfterDeleteListProduct(String key, Class<T> tClass) {
+        try {
+            if (hasKey(key)){
+                deleteKey(key);
+            }
             var product = listOperations.leftPop(key, Duration.ofSeconds(5));
             return objectMapper.convertValue(product, tClass);
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Product> getAfterDeleteListProduct(String key) {
+        try {
+            Object obj = listOperations.leftPop(key);
+            if (obj instanceof List) {
+                List<Object> rawList = (List<Object>) obj;
+                List<Product> products = rawList.stream()
+                        .map(item -> objectMapper.convertValue(item, Product.class))
+                        .collect(Collectors.toList());
+                return products;
+            }
+            return null;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Object> getListByRange(String key, long start, long end) {
+        try {
+            var list = listOperations.range(key, start, end);
+            return list;
         } catch (Exception e){
             e.printStackTrace();
             return null;

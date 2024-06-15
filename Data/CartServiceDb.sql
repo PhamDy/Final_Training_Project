@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS `carts` (
     `cart_id` BIGINT AUTO_INCREMENT  PRIMARY KEY,
    `user_id` BIGINT NOT NULL,
    `status` ENUM('Open', 'Close') DEFAULT 'Open',
-    `updated_at` TIMESTAMP NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_by` VARCHAR(50) DEFAULT NULL
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `cart_item` (
    `quantity` INT NOT NULL,
    `discount` FLOAT NULL,
    FOREIGN KEY (`cart_id`) REFERENCES carts(cart_id),
-    `updated_at` TIMESTAMP NULL,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_by` VARCHAR(50) NOT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_by` VARCHAR(50) DEFAULT NULL
