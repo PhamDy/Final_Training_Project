@@ -10,7 +10,6 @@
         <module name="DeliveryService" />
         <module name="ProductService" />
         <module name="AuthService" />
-        <module name="springsecsection9" />
         <module name="CartService" />
         <module name="Service-registry" />
         <module name="NotificationService" />
